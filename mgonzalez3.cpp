@@ -3,11 +3,23 @@
 //
 //
 //No Escape
+// mgonzalez3.cpp
 
 #include <iostream>
-using namespace std;
+#include <unistd.h>
+#include "mgonzalez3.h"
 
-int main() {
-  cout << "Hello World!";
-  return 0;
+using namespace std;
+void mgonzalez3::sayHello() {
+    cout << "Welcome to the most amazing" << endl;
+    sleep(1);
+    cout << "Spectactular" << endl;
+    sleep(1);
+    cout << "MAZE GAME NO ESCAPE" << endl;
+    sleep(2);
+    cout << "Wait, it didnt work" << endl;
+    sleep(1);
+    cout << "THERE IT IS" << endl;
+    sleep(1);
 }
+
