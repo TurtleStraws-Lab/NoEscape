@@ -10,10 +10,6 @@
 #include <cstdlib>
 #include "mgonzalez3.h"
 #include <string>
-
-
-
-
 using namespace std;
 
 void printCenteredText(const string& text) {
@@ -22,7 +18,7 @@ void printCenteredText(const string& text) {
     FILE* pipe = popen("tput cols", "r");  // Executes tput cols
     if (pipe) {
         fscanf(pipe, "%d", &consoleWidth);
-        fclose(pipe);
+        pclose(pipe);
     }
     else {
         cerr << "Error retrieving terminal width!" << endl;
