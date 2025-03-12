@@ -20,6 +20,7 @@
 #include <GL/glx.h>
 #include "log.h"
 #include "fonts.h"
+#include "mgonzalez3.h"
 
 //defined types
 typedef float Flt;
@@ -281,7 +282,7 @@ public:
 		XWarpPointer(dpy, None, win, 0, 0, 0, 0, x, y);
 	}
 	void show_mouse_cursor(const int onoff) {
-		printf("show_mouse_cursor(%i)\n", onoff); fflush(stdout);
+//	printf("show_mouse_cursor(%i)\n", onoff); fflush(stdout);
 		if (onoff) {
 			//this removes our own blank cursor.
 			XUndefineCursor(dpy, win);
@@ -319,7 +320,9 @@ void render();
 //==========================================================================
 int main()
 {
-	logOpen();
+	mgonzalez3 obj;
+    obj.sayHello();
+    logOpen();
 	init_opengl();
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
