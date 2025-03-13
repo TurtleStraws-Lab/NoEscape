@@ -33,7 +33,8 @@ void render_Text(float x, float y, const char* text, void* font) {
 void display_Credits() {
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
-    r.bot = gl.yres - 20;
+    r.bot = 10;
+    //r.bot = gl.yres - 20;
     r.center = 0;
     ggprint8b(&r, 16, 0x00ff0000, "Moises Gonzales");
     ggprint8b(&r, 16, 0x00ff0000, "Evelynn Turallo");
