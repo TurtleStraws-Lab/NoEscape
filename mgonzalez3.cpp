@@ -9,130 +9,57 @@
 #include <unistd.h>
 #include <cstdlib>
 #include "mgonzalez3.h"
-#include <string>
+#include <cmath>
+#include <GL/glx.h>
 using namespace std;
+// Function to set the background color to a dark color with transparency
+void mgonzalez3::darkBack(float r, float g, float b, float a) {
+    // Set the clear color to the given RGBA values
+    glClearColor(r, g, b, a);
 
-void printCenteredText(const string& text) {
-    // Get terminal width using tput (it returns the number of columns)
-    int consoleWidth = 0;
-    FILE* pipe = popen("tput cols", "r");  // Executes tput cols
-    if (pipe) {
-        fscanf(pipe, "%d", &consoleWidth);
-        pclose(pipe);
-    }
-    else {
-        cerr << "Error retrieving terminal width!" << endl;
-        return;
-    }
-
-    // Calculate the position to start printing
-    int x = (consoleWidth - text.length()) / 2;  // Horizontal center
-
-    // Print spaces to center the text and then print the text itself
-    cout << string(x, ' ') << text <<endl;
+    // Clear the color buffer (the screen), using the previously set color
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
+// Function to blend the lighting effect
+void glBlendFunc(GLenum sfactor, GLenum dfactor);
 
+// Function to create a circular lighting effect at a specified position
+void mgonzalez3::lighting(float pos1, float pos2, float area) {
+    // Save the current matrix state
+    glPushMatrix();
+    // Enable blending for transparent or semi-transparent effects
+    glEnable(GL_BLEND);
 
-void mgonzalez3::sayHello() {
+    // Set the color for the lighting (yellow, with some alpha value)
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
 
-string answer;
-        
-    system( "@cls || clear");
-    printCenteredText("Make your window fullscreen");
-    printCenteredText("Did you do it?");
-    cin >> answer;
-    if (answer == "yes")
-    { 
-    system( "@cls || clear");
-    }
-    else if(answer == "no"){
-     system( "@cls || clear");
-     printCenteredText("Well do it!");
-     sleep(2);
-     system( "@cls || clear");
-     printCenteredText("Did ya? :)");
-     cin >> answer;
-    }
-    
-    if (answer == "yes")
-    { 
-    system( "@cls || clear");
-    printCenteredText("About time");
-    }
-    else if(answer == "no")
-    {
-     system( "@cls || clear");
-     printCenteredText("I know where you live");
-     sleep(1.5);
-     system( "@cls || clear");
-     printCenteredText("I mean, come on friend its a really fun game");
-     printCenteredText("So are you gonna make it full screen (yes/no)");
-     cin >> answer;
-    }
-    
-    if (answer == "yes")
-    { 
-    system( "@cls || clear");
-    printCenteredText("Enjoy ~-~");
-    }
-    else if (answer == "no")
-    {
-     system( "@cls || clear");
-     printCenteredText("THEN YOU DON'T GET TO PLAY");
+    // Start drawing a filled circle (triangle fan)
+    glBegin(GL_TRIANGLE_FAN);
 
-    printCenteredText("     _______     ");
-    printCenteredText("    /       \\    ");
-    printCenteredText("   |  O   O  |   ");
-    printCenteredText("   |    ^    |   ");
-    printCenteredText("   |   ---   |   ");
-    printCenteredText("    \\_______/    ");
-    printCenteredText("      |   |       ");
-    printCenteredText("      |   |       ");
-    printCenteredText("     /     \\      ");
-    printCenteredText("    /       \\     ");
-    printCenteredText("   /         \\    ");
-    printCenteredText("  /           \\   ");
-    printCenteredText(" /_____________\\  ");
-     
-     
-    printCenteredText("               _____  ");
-    printCenteredText("             /       \\ ");
-    printCenteredText("            |  O   O  |");
-    printCenteredText("            |    ^    |");
-    printCenteredText("            |   ___   |");
-    printCenteredText("             \\_______/ ");
-    printCenteredText("            /         \\ ");
-    printCenteredText("           /  /\\     /\\ \\ ");
-    printCenteredText("          /  /  \\___/  \\ \\ ");
-    printCenteredText("         (  (           )  )");
-    printCenteredText("          \\  \\         /  / ");
-    printCenteredText("           \\  \\_______/  / ");
-    printCenteredText("            \\___________/  ");
+    // Set the center of the circle at the position (pos1, pos2)
+    glVertex2f(pos1, pos2);
 
+    // Set the number of vertices for the circle (higher values result in a smoother circle)
+    int circle = 100;
 
-     exit(0);
+    // Loop through each vertex of the circle
+    for (int i = 0; i <= circle; i++) {
+        // Calculate the angle for each vertex in radians (full circle = 2π)
+        float angle = (i / (float)circle) * 4.0f * M_PI;
+
+        // Calculate the x and y position of each vertex based on the angle
+        float x = pos1 + cos(angle) * area;
+        float y = pos2 + sin(angle) * area;
+
+        // Draw the vertex at the calculated position
+        glVertex2f(x, y);
     }
 
+    // End drawing the circle
+    glEnd();
 
-    system( "@cls || clear");
-    string text1 = "Welcome to the most amazing";
-    printCenteredText(text1);
-    sleep(2);
-    system( "@cls || clear");
-    string text2 = "Spectactular";
-    printCenteredText(text2);
-    sleep(2);
-    system( "@cls || clear");
-    string text3 = "MAZE GAME NO ESCAPE";
-    printCenteredText(text3);
-    sleep(2);
-    system( "@cls || clear");
-    string text4 = "Wait, it didnt work";
-    printCenteredText(text4);
-    sleep(2);
-    system( "@cls || clear");
-    string text5 = "THERE IT IS";
-    printCenteredText(text5);
-    system( "@cls || clear");
+    // Restore the previous matrix state
+    glPopMatrix();
 }
+

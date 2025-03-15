@@ -320,8 +320,7 @@ void render();
 //==========================================================================
 int main()
 {
-	mgonzalez3 obj;
-    obj.sayHello();
+   
     logOpen();
 	init_opengl();
 	srand(time(NULL));
@@ -799,8 +798,10 @@ void physics()
 void render()
 {
 	Rect r;
-	glClear(GL_COLOR_BUFFER_BIT);
-	//
+	mgonzalez3 obj;
+
+    obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 	r.bot = gl.yres - 20;
 	r.left = 10;
 	r.center = 0;
@@ -809,6 +810,7 @@ void render()
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
 	//-------------------------------------------------------------------------
 	//Draw the ship
+    obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
 	glColor3fv(g.ship.color);
 	glPushMatrix();
 	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
