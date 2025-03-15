@@ -8,6 +8,6 @@ asteroids: asteroids.cpp log.cpp timers.cpp background.cpp jturallo.cpp dvasquez
 	g++ $(CFLAGS) asteroids.cpp mgonzalez3.cpp dvasquez4.cpp gregpala.cpp ssayedmnasim.cpp jturallo.cpp log.cpp timers.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -o NoEscapeGame
 
 clean:
-	rm -f asteroids
+	rm -f NoEscapeGame
 	rm -f *.o
 
