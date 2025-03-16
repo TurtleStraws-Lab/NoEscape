@@ -1,264 +1,491 @@
-// Author: Geneva Regpala
+//Author: Geneva Regpala
 //
-// Compiles but doesn't function properly
-// Pushing code for lab 
-// Will adjust the functionality soon
-// 
+// Implementation of game screens (Loading, Menu, Credits)
+//
 
-#ifndef MENU_SCREEN_H
-#define MENU_SCREEN_H
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
 #include <iostream>
-#include <string>
+#include <ctime>
+#include <unistd.h>
+#include "gregpala.h"
 
-class MenuScreen {
-private:
-    GLuint backgroundTexture;
-    int windowWidth;
-    int windowHeight;
+// Initialize screen manager as a global object with default dimensions
+ScreenManager screenManager;
+
+
+// Loading Screen Implementation
+
+LoadingScreen::LoadingScreen() {
+    progress = 0.0f;
+    targetProgress = 0.0f;
+    rotation = 0.0f;
+    loadingDuration = 3.0f; // 3 second loading sequence
+    finished = false;
     
-    // Play button properties
-    float playButtonX;
-    float playButtonY;
-    float playButtonWidth;
-    float playButtonHeight;
-    bool playButtonHovered;
-    bool playButtonClicked;
+    // Start the timer
+    clock_gettime(CLOCK_REALTIME, &startTime);
+}
+
+void LoadingScreen::update() {
+    // Update the rotation for animation
+    rotation += 2.0f;
+    if (rotation > 360.0f)
+        rotation -= 360.0f;
     
-    // Load JPG texture
-    GLuint loadTexture(const char* filename) {
-        GLuint texture;
-        
-        // Load image file
-        FILE* file = fopen(filename, "rb");
-        if (!file) {
-            std::cerr << "Failed to load texture: " << filename << std::endl;
+    // Calculate elapsed time
+    struct timespec currentTime;
+    clock_gettime(CLOCK_REALTIME, &currentTime);
+    double elapsed = (currentTime.tv_sec - startTime.tv_sec) + 
+                     (currentTime.tv_nsec - startTime.tv_nsec) / 1.0e9;
+    
+    // Update progress based on elapsed time
+    targetProgress = (elapsed / loadingDuration) * 100.0f;
+    if (targetProgress > 100.0f)
+        targetProgress = 100.0f;
+    
+    // Smooth progress bar
+    progress += (targetProgress - progress) * 0.05f;
+    
+    // Check if loading is complete
+    if (elapsed >= loadingDuration && progress >= 99.0f) {
+        finished = true;
+    }
+}
+
+void LoadingScreen::render() {
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Draw title
+    Rect r;
+    r.bot = scrHeight - 120;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
+    
+    // Draw loading text
+    r.bot = scrHeight/2 + 50;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint8b(&r, 0, 0x00ffff00, "LOADING...");
+    
+    // Draw progress percentage
+    r.bot = scrHeight/2 - 60;
+    r.left = scrWidth/2;
+    r.center = 1;
+    char progressText[32];
+    snprintf(progressText, sizeof(progressText), "%.0f%%", progress);
+    ggprint8b(&r, 0, 0x00ffff00, progressText);
+    
+    // Draw loading bar outline
+    int barWidth = scrWidth * 0.6;
+    int barHeight = 20;
+    int barLeft = (scrWidth - barWidth) / 2;
+    int barTop = scrHeight/2 - 20;
+    
+    glColor3f(0.8f, 0.8f, 0.8f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(barLeft, barTop);
+    glVertex2f(barLeft + barWidth, barTop);
+    glVertex2f(barLeft + barWidth, barTop - barHeight);
+    glVertex2f(barLeft, barTop - barHeight);
+    glEnd();
+    
+    // Draw loading bar fill
+    float fillWidth = (progress / 100.0f) * barWidth;
+    glColor3f(0.2f, 0.7f, 1.0f);
+    glBegin(GL_QUADS);
+    glVertex2f(barLeft, barTop);
+    glVertex2f(barLeft + fillWidth, barTop);
+    glVertex2f(barLeft + fillWidth, barTop - barHeight);
+    glVertex2f(barLeft, barTop - barHeight);
+    glEnd();
+    
+    // Loading screen now has a clean look without the spinning asteroid
+}
+
+int LoadingScreen::handleMouse(int x, int y, int button) {
+    // Unused parameters, suppressing warnings
+    (void)x;
+    (void)y;
+    (void)button;
+    return 0;
+}
+
+int LoadingScreen::handleKey(int key) {
+    // Skip loading on space or enter
+    if (key == 32 || key == 13) { // 32 is space, 13 is enter
+        progress = 100.0f;
+        finished = true;
+        return 1;
+    }
+    return 0;
+}
+
+
+// Button Implementation
+
+Button::Button(int x, int y, int width, int height, const char* text) {
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->text = text;
+    this->hover = false;
+}
+
+void Button::render() {
+    // Draw button background
+    if (hover) {
+        glColor3f(0.4f, 0.4f, 0.9f); // Highlight color
+    } else {
+        glColor3f(0.2f, 0.2f, 0.7f); // Normal color
+    }
+    
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width, y - height);
+    glVertex2f(x, y - height);
+    glEnd();
+    
+    // Draw button border
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width, y - height);
+    glVertex2f(x, y - height);
+    glEnd();
+    
+    // Draw button text
+    Rect r;
+    r.bot = y - height/2 - 4;
+    r.left = x + width/2;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffffff, text);
+}
+
+bool Button::isClicked(int mouseX, int mouseY, int screenHeight) {
+    // Convert mouse Y coordinate (from top) to our coordinate system (from bottom)
+    int adjustedY = screenHeight - mouseY;
+    
+    return (mouseX >= x && mouseX <= x + width &&
+            adjustedY <= y && adjustedY >= y - height);
+}
+
+// Menu Screen Implementation
+
+MenuScreen::MenuScreen() {
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    int buttonWidth = 200;
+    int buttonHeight = 50;
+    int buttonX = (scrWidth - buttonWidth) / 2;
+    
+    // Add Play button
+    buttons.push_back(Button(buttonX, scrHeight/2 + 30, buttonWidth, buttonHeight, "PLAY"));
+    
+    // Add Credits button
+    buttons.push_back(Button(buttonX, scrHeight/2 - 50, buttonWidth, buttonHeight, "CREDITS"));
+    
+    selectedButton = 0;
+    titlePulse = 1.0f;
+    titlePulseDir = -0.01f;
+}
+
+void MenuScreen::update() {
+    // Update title pulsing animation
+    titlePulse += titlePulseDir;
+    if (titlePulse <= 0.8f || titlePulse >= 1.2f) {
+        titlePulseDir = -titlePulseDir;
+    }
+    
+    // Reset all button hover states
+    for (auto &button : buttons) {
+        button.setHover(false);
+    }
+    
+    // Set hover for selected button
+    if (selectedButton >= 0 && selectedButton < (int)buttons.size()) {
+        buttons[selectedButton].setHover(true);
+    }
+}
+
+void MenuScreen::render() {
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Draw title with pulsing effect
+    glPushMatrix();
+    glTranslatef(scrWidth/2, scrHeight - 120, 0);
+    glScalef(titlePulse, titlePulse, 1.0f);
+    
+    Rect r;
+    r.bot = 0;
+    r.left = 0;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
+    glPopMatrix();
+    
+    // Menu screen now has a clean look without decorative elements
+    
+    // Draw buttons
+    for (auto &button : buttons) {
+        button.render();
+    }
+    
+    // Draw version and copyright
+    r.bot = 30;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint8b(&r, 0, 0x00ffff00, "Version 1.0");
+    
+    r.bot = 15;
+    ggprint8b(&r, 0, 0x0088ff88, "2025 NO ESCAPE TEAM 3");
+}
+
+int MenuScreen::handleMouse(int x, int y, int button) {
+    int scrHeight = screenManager.getScreenHeight();
+    
+    if (button == 1) { // Left click
+        for (size_t i = 0; i < buttons.size(); i++) {
+            if (buttons[i].isClicked(x, y, scrHeight)) {
+                if (i == 0) { // Play button
+                    screenManager.setState(GAME);
+                    return 1;
+                } else if (i == 1) { // Credits button
+                    screenManager.setState(CREDITS);
+                    return 1;
+                }
+            }
+        }
+    }
+    
+    // Update hover states
+    for (size_t i = 0; i < buttons.size(); i++) {
+        if (buttons[i].isClicked(x, y, scrHeight)) {
+            selectedButton = i;
+            break;
+        }
+    }
+    
+    return 0;
+}
+
+int MenuScreen::handleKey(int key) {
+    // Up/Down to navigate buttons
+    if (key == 65362) { // Up arrow
+        selectedButton = (selectedButton - 1 + buttons.size()) % buttons.size();
+        return 1;
+    } else if (key == 65364) { // Down arrow
+        selectedButton = (selectedButton + 1) % buttons.size();
+        return 1;
+    } else if (key == 32 || key == 13) { // Space or Enter to select
+        if (selectedButton == 0) { // Play button
+            screenManager.setState(GAME);
+            return 1;
+        } else if (selectedButton == 1) { // Credits button
+            screenManager.setState(CREDITS);
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+// Credits Screen Implementation
+
+CreditsScreen::CreditsScreen() 
+    : scrollY(0.0f),
+      backButton((screenManager.getScreenWidth() - 100) / 2, 100, 100, 40, "BACK") {
+}
+
+void CreditsScreen::update() {
+    // Auto-scroll credits
+    scrollY -= 0.5f;
+    
+    // Reset scroll when credits have scrolled through
+    if (scrollY < -600) {
+        scrollY = screenManager.getScreenHeight();
+    }
+}
+
+void CreditsScreen::render() {
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Draw title
+    Rect r;
+    r.bot = scrHeight - 80;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffffff, "CREDITS");
+    
+    // Draw scrolling credits
+    float baseY = scrollY;
+    
+    r.bot = baseY;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffff00, "NO ESCAPE");
+    
+    r.bot = baseY - 60;
+    ggprint8b(&r, 0, 0x00ffffff, "Programming");
+    
+    r.bot = baseY - 90;
+    ggprint8b(&r, 0, 0x0088ff88, "Loading Screen/Menu");
+    
+    r.bot = baseY - 150;
+    ggprint8b(&r, 0, 0x00ffffff, "Geneva Regpala");
+    
+    r.bot = baseY - 180;
+    ggprint8b(&r, 0, 0x0088ff88, "Role");
+    
+    r.bot = baseY - 240;
+    ggprint8b(&r, 0, 0x00ffffff, "name");
+    
+    r.bot = baseY - 270;
+    ggprint8b(&r, 0, 0x0088ff88, "Role placeholder");
+    
+    r.bot = baseY - 330;
+    ggprint8b(&r, 0, 0x00ffffff, "name");
+    
+    r.bot = baseY - 360;
+    ggprint8b(&r, 0, 0x0088ff88, "role");
+    
+    r.bot = baseY - 420;
+    ggprint8b(&r, 0, 0x00ffffff, "name");
+    
+    r.bot = baseY - 450;
+    ggprint8b(&r, 0, 0x0088ff88, "");
+    
+    r.bot = baseY - 480;
+    ggprint8b(&r, 0, 0x0088ff88, "");
+    
+    // Draw back button
+    backButton.render();
+}
+
+int CreditsScreen::handleMouse(int x, int y, int button) {
+    int scrHeight = screenManager.getScreenHeight();
+    
+    if (button == 1) { // Left click
+        if (backButton.isClicked(x, y, scrHeight)) {
+            screenManager.setState(MENU);
+            return 1;
+        }
+    }
+    
+    // Update hover state
+    backButton.setHover(backButton.isClicked(x, y, scrHeight));
+    
+    return 0;
+}
+
+int CreditsScreen::handleKey(int key) {
+    // Esc or Backspace to go back to menu
+    if (key == 27 || key == 8) { // 27 is Esc, 8 is Backspace
+        screenManager.setState(MENU);
+        return 1;
+    }
+    return 0;
+}
+
+// Screen Manager Implementation
+
+ScreenManager::ScreenManager(int width, int height) {
+    currentState = LOADING;
+    screenWidth = width;
+    screenHeight = height;
+    loadingScreen = new LoadingScreen();
+    menuScreen = new MenuScreen();
+    creditsScreen = new CreditsScreen();
+}
+
+ScreenManager::~ScreenManager() {
+    delete loadingScreen;
+    delete menuScreen;
+    delete creditsScreen;
+}
+
+void ScreenManager::update() {
+    switch (currentState) {
+        case LOADING:
+            loadingScreen->update();
+            if (loadingScreen->isFinished()) {
+                currentState = MENU;
+            }
+            break;
+        case MENU:
+            menuScreen->update();
+            break;
+        case CREDITS:
+            creditsScreen->update();
+            break;
+        case GAME:
+            // Game update is handled in the main game loop
+            break;
+    }
+}
+
+void ScreenManager::render() {
+    switch (currentState) {
+        case LOADING:
+            loadingScreen->render();
+            break;
+        case MENU:
+            menuScreen->render();
+            break;
+        case CREDITS:
+            creditsScreen->render();
+            break;
+        case GAME:
+            // Game rendering is handled in the main game rendering function
+            break;
+    }
+}
+
+int ScreenManager::handleMouse(int x, int y, int button) {
+    switch (currentState) {
+        case LOADING:
+            return loadingScreen->handleMouse(x, y, button);
+        case MENU:
+            return menuScreen->handleMouse(x, y, button);
+        case CREDITS:
+            return creditsScreen->handleMouse(x, y, button);
+        case GAME:
+            // Game mouse handling is done in main game loop
             return 0;
-        }
-        
-        // Get file size
-        fseek(file, 0, SEEK_END);
-        long fileSize = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        
-        // Allocate memory for file data
-        unsigned char* data = new unsigned char[fileSize];
-        fread(data, fileSize, 1, file);
-        fclose(file);
-        
-        // Create OpenGL texture
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        
-        // Set texture parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        // Load texture data
-        // Note: In a real implementation, you would use a proper image loading library
-        // like stb_image or use the JPG loading code to convert to raw pixels
-        // For simplicity, we're just creating a placeholder texture
-        unsigned char* pixels = new unsigned char[256 * 256 * 3];
-        for (int y = 0; y < 256; y++) {
-            for (int x = 0; x < 256; x++) {
-                pixels[(y * 256 + x) * 3 + 0] = (x + y) % 256;  // R
-                pixels[(y * 256 + x) * 3 + 1] = x % 256;        // G
-                pixels[(y * 256 + x) * 3 + 2] = y % 256;        // B
-            }
-        }
-        
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-        delete[] pixels;
-        delete[] data;
-        
-        return texture;
     }
-    
-    // Check if point is inside rectangle
-    bool isPointInRectangle(float x, float y, float rectX, float rectY, float rectWidth, float rectHeight) {
-        return (x >= rectX && x <= rectX + rectWidth && 
-                y >= rectY && y <= rectY + rectHeight);
-    }
-    
-public:
-    MenuScreen(int windowWidth, int windowHeight) : 
-        windowWidth(windowWidth), 
-        windowHeight(windowHeight),
-        playButtonHovered(false),
-        playButtonClicked(false) {
-        
-        // Load background texture
-        backgroundTexture = loadTexture("MenuScreen.jpg");
-        
-        // Setup play button
-        playButtonWidth = 200;
-        playButtonHeight = 80;
-        playButtonX = (windowWidth - playButtonWidth) / 2;
-        playButtonY = (windowHeight - playButtonHeight) / 2;
-    }
-    
-    ~MenuScreen() {
-        // Clean up textures
-        glDeleteTextures(1, &backgroundTexture);
-    }
-    
-    void resize(int width, int height) {
-        windowWidth = width;
-        windowHeight = height;
-        
-        // Recalculate button position
-        playButtonX = (windowWidth - playButtonWidth) / 2;
-        playButtonY = (windowHeight - playButtonHeight) / 2;
-    }
-    
-    void mouseMove(int x, int y) {
-        // OpenGL has y=0 at bottom, but most window systems have y=0 at top
-        y = windowHeight - y;
-        
-        // Check if mouse is over play button
-        playButtonHovered = isPointInRectangle(x, y, playButtonX, playButtonY, 
-                                             playButtonWidth, playButtonHeight);
-    }
-    
-    void mouseClick(int button, int state, int x, int y) {
-        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-            // OpenGL has y=0 at bottom, but most window systems have y=0 at top
-            y = windowHeight - y;
-            
-            if (isPointInRectangle(x, y, playButtonX, playButtonY, 
-                                  playButtonWidth, playButtonHeight)) {
-                playButtonClicked = true;
-            }
-        }
-    }
-    
-    void draw() {
-        // Save current matrix
-        glPushMatrix();
-        
-        // Set up orthographic projection for 2D rendering
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        gluOrtho2D(0, windowWidth, 0, windowHeight);
-        
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        
-        // Disable depth testing for 2D
-        glDisable(GL_DEPTH_TEST);
-        
-        // Draw background
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f); glVertex2f(0, 0);
-            glTexCoord2f(1.0f, 0.0f); glVertex2f(windowWidth, 0);
-            glTexCoord2f(1.0f, 1.0f); glVertex2f(windowWidth, windowHeight);
-            glTexCoord2f(0.0f, 1.0f); glVertex2f(0, windowHeight);
-        glEnd();
-        
-        glDisable(GL_TEXTURE_2D);
-        
-        // Draw play button
-        if (playButtonHovered) {
-            glColor4f(0.6f, 0.6f, 1.0f, 0.8f);  // Light blue when hovered
-        } else {
-            glColor4f(0.4f, 0.4f, 0.8f, 0.8f);  // Dark blue normally
-        }
-        
-        glBegin(GL_QUADS);
-            glVertex2f(playButtonX, playButtonY);
-            glVertex2f(playButtonX + playButtonWidth, playButtonY);
-            glVertex2f(playButtonX + playButtonWidth, playButtonY + playButtonHeight);
-            glVertex2f(playButtonX, playButtonY + playButtonHeight);
-        glEnd();
-        
-        // Draw button outline
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glLineWidth(2.0f);
-        glBegin(GL_LINE_LOOP);
-            glVertex2f(playButtonX, playButtonY);
-            glVertex2f(playButtonX + playButtonWidth, playButtonY);
-            glVertex2f(playButtonX + playButtonWidth, playButtonY + playButtonHeight);
-            glVertex2f(playButtonX, playButtonY + playButtonHeight);
-        glEnd();
-        
-        // Draw "PLAY" text
-        //
-      
-        float textX = playButtonX + playButtonWidth / 2.0f - 30.0f;
-        float textY = playButtonY + playButtonHeight / 2.0f - 10.0f;
-        
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glLineWidth(3.0f);
-        
-        // 'P'
-        glBegin(GL_LINE_STRIP);
-            glVertex2f(textX, textY);
-            glVertex2f(textX, textY + 20.0f);
-            glVertex2f(textX + 10.0f, textY + 20.0f);
-            glVertex2f(textX + 15.0f, textY + 15.0f);
-            glVertex2f(textX + 10.0f, textY + 10.0f);
-            glVertex2f(textX, textY + 10.0f);
-        glEnd();
-        
-        // 'L'
-        textX += 20.0f;
-        glBegin(GL_LINE_STRIP);
-            glVertex2f(textX, textY + 20.0f);
-            glVertex2f(textX, textY);
-            glVertex2f(textX + 10.0f, textY);
-        glEnd();
-        
-        // 'A'
-        textX += 15.0f;
-        glBegin(GL_LINE_STRIP);
-            glVertex2f(textX, textY);
-            glVertex2f(textX + 7.5f, textY + 20.0f);
-            glVertex2f(textX + 15.0f, textY);
-        glEnd();
-        glBegin(GL_LINES);
-            glVertex2f(textX + 3.0f, textY + 8.0f);
-            glVertex2f(textX + 12.0f, textY + 8.0f);
-        glEnd();
-        
-        // 'Y'
-        textX += 20.0f;
-        glBegin(GL_LINE_STRIP);
-            glVertex2f(textX, textY + 20.0f);
-            glVertex2f(textX + 7.5f, textY + 10.0f);
-            glVertex2f(textX + 15.0f, textY + 20.0f);
-        glEnd();
-        glBegin(GL_LINES);
-            glVertex2f(textX + 7.5f, textY + 10.0f);
-            glVertex2f(textX + 7.5f, textY);
-        glEnd();
-        
-        // Restore OpenGL state
-        glEnable(GL_DEPTH_TEST);
-        
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-    }
-    
-    bool isPlayClicked() const {
-        return playButtonClicked;
-    }
-    
-    void resetPlayClicked() {
-        playButtonClicked = false;
-    }
-};
+    return 0;
+}
 
-#endif // MENU_SCREEN_H
+int ScreenManager::handleKey(int key) {
+    switch (currentState) {
+        case LOADING:
+            return loadingScreen->handleKey(key);
+        case MENU:
+            return menuScreen->handleKey(key);
+        case CREDITS:
+            return creditsScreen->handleKey(key);
+        case GAME:
+            // Game key handling is done in main game loop
+            // But we can handle ESC to return to menu
+            if (key == 27) { // ESC
+                currentState = MENU;
+                return 1;
+            }
+            return 0;
+    }
+    return 0;
+}
