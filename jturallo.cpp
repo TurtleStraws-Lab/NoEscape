@@ -31,7 +31,7 @@ void render_Text(float x, float y, const char* text, void* font) {
 
 //will upgrade this to be done with graphics rather than window text soon
 //adding now for the sake of committing code for lab
-void display_Credits() {
+void displayCredits() {
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
     r.bot = 10;
