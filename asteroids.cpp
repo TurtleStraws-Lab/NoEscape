@@ -55,6 +55,7 @@ extern double physicsCountdown;
 extern double timeSpan;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
+extern void displayCredits();
 //-----------------------------------------------------------------------------
 
 class Global {
