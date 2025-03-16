@@ -10,6 +10,7 @@
 #include <iostream>
 #include <GL/glx.h>
 #include "fonts.h"
+#include "jturallo.h"
 
 /*
 currently rendering a background for loading screen and for the
