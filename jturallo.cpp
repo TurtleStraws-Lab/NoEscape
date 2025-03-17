@@ -12,6 +12,8 @@
 #include <GL/gl.h>
 #include "fonts.h"
 #include "jturallo.h"
+//for images; from backgrounds.cpp
+#include <unistd.h>
 
 /*
    currently rendering a background for loading screen and for the
