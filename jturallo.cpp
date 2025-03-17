@@ -23,11 +23,11 @@
 //should the function end after receiving a signal that
 //loading has finished? or should it have a min timer
 
-/*
-   void render_Text(float x, float y, const char* text, void* font) {
-
-   }
-   */
+/*-------------------------------------------------------------------------*/
+//VARIABLE DECLARATIONS
+/*------------------------------------------------------------------------*/
+Textbox* title = nullptr;
+Textbox* names = nullptr;
 
 
 Textbox::Textbox(int x, int y, int width, int height, const std::string &text, unsigned int color)
@@ -40,8 +40,15 @@ void Textbox::draw()
     r.left = x;
     r.center = 0;
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    ggprint8b(&r, 16, color, text.c_str());
+    int lineSpacing = 20;
+
+    std::istringstream stream(text);
+    std::string line;
+
+    while (std::getline(stream,line)) {
+        ggprint8b(&r, 16, color, line.c_str());
+        r.bot -= lineSpacing;
+    }
 
 }
 
@@ -58,25 +65,58 @@ void Textbox::setColor(unsigned int newColor) {
     color = newColor;
 }
 
+void makeCredits() {
+
+    if (!title) {
+        title = new Textbox(200, 500, 400, 50, "Game Credits", 0x00ffffff);
+    }
+
+    if (!names) {
+    std::string creditsText = 
+        "Game Credits\n"
+        "Moises Gonzales\n"
+        "Evelynn Turallo\n"
+        "Geneva Regpala\n"
+        "Sayed Jalal Sayed M Nasim\n"
+        "Devin Vasquez";
+
+    names = new Textbox(200, 450, 400, 250, creditsText, 0x0000ff00);
+    //Going to try having all names in one textbox
+    //to minimize # of objects
+    /*
+       Textbox names(200, 450, 400, 50, "Moises Gonzales", 0x00ff0000);
+       Textbox name2(200, 400, 400, 50, "Evelynn Turallo", 0x0000ff00);
+       Textbox name3(200, 350, 400, 50, "Geneva Regpala", 0x000000ff);
+       Textbox name4(200, 300, 400, 50, "Sayed Jalal Sayed M Nasim", 0x00ff00ff);
+       Textbox name5(200, 250, 400, 50, "Devin Vasquez", 0x00ffff00);
+       */
+
+    }
+}
+
 void displayCredits() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    Textbox title(200, 500, 400, 50, "Game Credits", 0x00ffffff);
-    Textbox name1(200, 450, 400, 50, "Moises Gonzales", 0x00ff0000);
-    Textbox name2(200, 400, 400, 50, "Evelynn Turallo", 0x0000ff00);
-    Textbox name3(200, 350, 400, 50, "Geneva Regpala", 0x000000ff);
-    Textbox name4(200, 300, 400, 50, "Sayed Jalal Sayed M Nasim", 0x00ff00ff);
-    Textbox name5(200, 250, 400, 50, "Devin Vasquez", 0x00ffff00);
+    if (title) {
+        title->draw();
+    }
 
-    title.draw();
-    name1.draw();
-    name2.draw();
-    name3.draw();
-    name4.draw();
-    name5.draw();
+    if (names) {
+        names->draw();
+    }
 
     glFlush();
+
 }
+
+void removeCredits() {
+    delete title;
+    title = nullptr;
+
+    delete names;
+    names = nullptr;
+}
+
 
 //textbox class can be reused for an instruction menu
 
