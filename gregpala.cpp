@@ -1,7 +1,7 @@
 //Author: Geneva Regpala
 //
 // Implementation of game screens (Loading, Menu, Credits)
-//
+// Working on credits fixes
 
 #include <iostream>
 #include <ctime>
@@ -103,7 +103,7 @@ void LoadingScreen::render() {
     glVertex2f(barLeft, barTop - barHeight);
     glEnd();
     
-    // Loading screen now has a clean look without the spinning asteroid
+    
 }
 
 int LoadingScreen::handleMouse(int x, int y, int button) {
@@ -234,7 +234,6 @@ void MenuScreen::render() {
     ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
     glPopMatrix();
     
-    // Menu screen now has a clean look without decorative elements
     
     // Draw buttons
     for (auto &button : buttons) {
@@ -316,7 +315,7 @@ void CreditsScreen::update() {
         scrollY = screenManager.getScreenHeight();
     }
 }
-
+// working on fixes
 void CreditsScreen::render() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
