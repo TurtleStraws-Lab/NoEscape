@@ -21,6 +21,7 @@
 #include "log.h"
 #include "fonts.h"
 #include "mgonzalez3.h"
+#include "gregpala.h"
 
 //defined types
 typedef float Flt;
@@ -341,10 +342,16 @@ int main()
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
 		timeCopy(&timeStart, &timeCurrent);
 		physicsCountdown += timeSpan;
+		// Update the screen manager
+        screenManager.update();
+        
+        // Only update physics if in game state
+        if (screenManager.getState() == GAME) {
 		while (physicsCountdown >= physicsRate) {
 			physics();
 			physicsCountdown -= physicsRate;
 		}
+	}
 		render();
 		x11.swapBuffers();
 	}
@@ -397,6 +404,7 @@ void check_mouse(XEvent *e)
 	//
 	static int ct=0;
 	//std::cout << "m" << std::endl << std::flush;
+	if (screenManager.getState() == GAME) {
 	if (e->type == ButtonRelease) {
 		return;
 	}
@@ -492,6 +500,24 @@ void check_mouse(XEvent *e)
 		savey = 200;
 	}
 }
+else {
+	// Handle mouse for UI screens
+	if (e->type == ButtonPress || e->type == ButtonRelease) {
+		if (screenManager.handleMouse(e->xbutton.x, e->xbutton.y, e->xbutton.button)) {
+			return;
+		}
+	}
+	
+	// Track mouse position for menu hover effects
+	if (savex != e->xbutton.x || savey != e->xbutton.y) {
+		savex = e->xbutton.x;
+		savey = e->xbutton.y;
+		
+		// Pass mouse movement to screen manager
+		screenManager.handleMouse(savex, savey, 0);
+	}
+}
+}
 
 int check_keys(XEvent *e)
 {
@@ -516,9 +542,16 @@ int check_keys(XEvent *e)
 			return 0;
 		}
 	}
+	if (screenManager.handleKey(key)) {
+        return 0;
+    }
+
+    // Only process these keys in game state
+    if (screenManager.getState() == GAME) {
 	(void)shift;
 	switch (key) {
 		case XK_Escape:
+			screenManager.setState(MENU);
 			return 1;
 		case XK_m:
 			gl.mouse_cursor_on = !gl.mouse_cursor_on;
@@ -533,6 +566,7 @@ int check_keys(XEvent *e)
 		case XK_minus:
 			break;
 	}
+}
 	return 0;
 }
 
@@ -798,6 +832,11 @@ void physics()
 
 void render()
 {
+	if (screenManager.getState() != GAME) {
+        screenManager.render();
+        return;
+    }
+	
 	Rect r;
 	mgonzalez3 obj;
 
