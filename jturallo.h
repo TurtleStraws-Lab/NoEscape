@@ -15,7 +15,10 @@ class Textbox {
         unsigned int color;
 
     public:
-        Textbox(int x, int y, int width, int height, const std::string &text, unsigned int color = 0x00ff0000);
+        Textbox(
+                int x, int y, int width, int height, 
+                const std::string &text, unsigned int color = 0x00ff0000
+                );
         void draw();
         void setText(const std::string &newText);
         void setPosition(int newX, int newY);

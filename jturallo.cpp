@@ -32,8 +32,10 @@ Textbox* title = nullptr;
 Textbox* names = nullptr;
 
 
-Textbox::Textbox(int x, int y, int width, int height, const std::string &text, unsigned int color)
-    : x(x), y(y), width(width), height(height), text(text), color(color) {}
+Textbox::Textbox(int x, int y, int width, int height, 
+        const std::string &text, unsigned int color)
+    : x(x), y(y), width(width), height(height), 
+    text(text), color(color) {}
 
 void Textbox::draw()
 {
@@ -86,11 +88,16 @@ void makeCredits() {
         //Going to try having all names in one textbox
         //to minimize # of objects
         /*
-           Textbox names(200, 450, 400, 50, "Moises Gonzales", 0x00ff0000);
-           Textbox name2(200, 400, 400, 50, "Evelynn Turallo", 0x0000ff00);
-           Textbox name3(200, 350, 400, 50, "Geneva Regpala", 0x000000ff);
-           Textbox name4(200, 300, 400, 50, "Sayed Jalal Sayed M Nasim", 0x00ff00ff);
-           Textbox name5(200, 250, 400, 50, "Devin Vasquez", 0x00ffff00);
+           Textbox names(200, 450, 400, 50, 
+           "Moises Gonzales", 0x00ff0000);
+           Textbox name2(200, 400, 400, 50, 
+           "Evelynn Turallo", 0x0000ff00);
+           Textbox name3(200, 350, 400, 50, 
+           "Geneva Regpala", 0x000000ff);
+           Textbox name4(200, 300, 400, 50, 
+           "Sayed Jalal Sayed M Nasim", 0x00ff00ff);
+           Textbox name5(200, 250, 400, 50, 
+           "Devin Vasquez", 0x00ffff00);
            */
 
     }
