@@ -2,23 +2,44 @@
 // date: 02/11/2025
 //
 //
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alut.h>
 #include <iostream>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
-#include <ctime>
-#include <cmath>
-#include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include <X11/keysym.h>
-#include <GL/glx.h>
-#include "log.h"
-#include "fonts.h"
 #include "ssayedmnasim.h"
 
 using namespace std;
+
+
+static ALuint buffer;
+static ALuint source;
+
+bool initSound() {
+    alutInit(0, NULL);
+
+    buffer = alutCreateBufferFromFile("sounds/background.wav");
+    if (buffer == AL_NONE) {
+        std::cerr << "Error loading sound file.\n";
+        return false;
+    }
+
+    alGenSources(1, &source);
+    alSourcei(source, AL_BUFFER, buffer);
+    alSourcei(source, AL_LOOPING, AL_TRUE);
+    alSourcef(source, AL_GAIN, 0.5f); // adjust volume if needed
+
+    return true;
+}
+
+void startBackgroundSound() {
+    alSourcePlay(source);
+}
+
+void shutdownSound() {
+    alDeleteSources(1, &source);
+    alDeleteBuffers(1, &buffer);
+    alutExit();
+}
 
 void sayed()
 {
@@ -36,10 +57,10 @@ void changeDirection()
 {
     // Reset velocity
 //    g.ship.vel[0] = 0.0f;
-//    g.ship.vel[1] = 0.0f;
+//   g.ship.vel[1] = 0.0f;
 
     // Apply directional movement
-//    if (gl.keys[XK_Up]) {
+//   if (gl.keys[XK_Up]) {
 //        g.ship.vel[1] = 4.0f;
 //       g.ship.angle = 0.0f;
 //    }

@@ -22,6 +22,7 @@
 #include "fonts.h"
 #include "mgonzalez3.h"
 #include "gregpala.h"
+#include "ssayedmnasim.h"
 
 //defined types
 typedef float Flt;
