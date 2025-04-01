@@ -760,23 +760,30 @@ void physics()
 	}
 	//---------------------------------------------------
 	//check keys pressed now
+    /*
 	if (gl.keys[XK_Left]) {
 		g.ship.angle += 4.0;
 		if (g.ship.angle >= 360.0f)
 			g.ship.angle -= 360.0f;
+       g.ship.vel[1] = 4.0f;
 	}
 	if (gl.keys[XK_Right]) {
 		g.ship.angle -= 4.0;
 		if (g.ship.angle < 0.0f)
 			g.ship.angle += 360.0f;
+        g.ship.vel[0]= 4.0f;
 	}
+
 	if (gl.keys[XK_Up]) {
 		//apply thrust
 		//convert ship angle to radians
-		Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+		//Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
 		//convert angle to a vector
-		Flt xdir = cos(rad);
-		Flt ydir = sin(rad);
+		//Flt xdir = cos(rad);
+		//Flt ydir = sin(rad);
+        Flt xdir = 0.0f;
+        Flt ydir = 1.0f;
+
 		g.ship.vel[0] += xdir*0.02f;
 		g.ship.vel[1] += ydir*0.02f;
 		Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
@@ -787,7 +794,32 @@ void physics()
 			g.ship.vel[0] *= speed;
 			g.ship.vel[1] *= speed;
 		}
-	}
+	}*/
+
+    //----------------------------------------------
+    //Movement Added by Sayed Jalal
+    g.ship.vel[0] = 0.0f;
+    g.ship.vel[1] = 0.0f;
+
+    // Static movement along X and Y axis
+    if (gl.keys[XK_Up]) {
+       g.ship.vel[1] = 2.0f;
+    }
+
+    if (gl.keys[XK_Down]) {
+       g.ship.vel[1] = -2.0f;
+    }
+
+    if (gl.keys[XK_Left]) {
+       g.ship.vel[0] = -2.0f;
+    }
+
+    if (gl.keys[XK_Right]) {
+       g.ship.vel[0] = 2.0f;
+    }
+    //-----------------------------------------------
+
+
 	if (gl.keys[XK_space]) {
 		//a little time between each bullet
 		struct timespec bt;
@@ -856,7 +888,7 @@ void render()
 	glPushMatrix();
 	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
 	//float angle = atan2(ship.dir[1], ship.dir[0]);
-	glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+	//glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_TRIANGLES);
 	//glVertex2f(-10.0f, -10.0f);
 	//glVertex2f(  0.0f, 20.0f);
@@ -873,10 +905,11 @@ void render()
 	glVertex2f(0.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
+    /*
 	if (gl.keys[XK_Up] || g.mouseThrustOn) {
 		int i;
 		//draw thrust
-		Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+		//Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
 		//convert angle to a vector
 		Flt xdir = cos(rad);
 		Flt ydir = sin(rad);
@@ -941,6 +974,7 @@ void render()
 		glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
 		glEnd();
 	}
+    */
 }
 
 
