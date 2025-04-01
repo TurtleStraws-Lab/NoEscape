@@ -326,6 +326,10 @@ int main()
    
     logOpen();
 	init_opengl();
+    // added by sayed
+    initSound();
+    startBackgroundSound();
+
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
@@ -358,6 +362,7 @@ int main()
 	}
 	cleanup_fonts();
 	logClose();
+    shutdownSound();
 	return 0;
 }
 
