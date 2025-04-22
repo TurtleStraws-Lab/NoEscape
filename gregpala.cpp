@@ -308,12 +308,12 @@ CreditsScreen::CreditsScreen()
 
 void CreditsScreen::update() {
     // Auto-scroll credits
-    scrollY -= 0.5f;
+    /*scrollY -= 0.5f;
     
     // Reset scroll when credits have scrolled through
     if (scrollY < -600) {
         scrollY = screenManager.getScreenHeight();
-    }
+    }*/
 }
 // working on fixes
 void CreditsScreen::render() {
@@ -331,45 +331,43 @@ void CreditsScreen::render() {
     ggprint16(&r, 0, 0x00ffffff, "CREDITS");
     
     // Draw scrolling credits
-    float baseY = scrollY;
+    float baseY = scrHeight - 120;
+    float lineSpacing = 30.0f;
     
     r.bot = baseY;
     r.left = scrWidth/2;
     r.center = 1;
     ggprint16(&r, 0, 0x00ffff00, "NO ESCAPE");
     
-    r.bot = baseY - 60;
+    r.bot = baseY - lineSpacing;
     ggprint8b(&r, 0, 0x00ffffff, "Programming");
     
-    r.bot = baseY - 90;
+    r.bot = baseY - lineSpacing * 2;
     ggprint8b(&r, 0, 0x0088ff88, "Loading Screen/Menu");
     
-    r.bot = baseY - 150;
+    r.bot = baseY - lineSpacing * 3;
     ggprint8b(&r, 0, 0x00ffffff, "Geneva Regpala");
     
-    r.bot = baseY - 180;
-    ggprint8b(&r, 0, 0x0088ff88, "Role");
+    r.bot = baseY - lineSpacing * 4;
+    ggprint8b(&r, 0, 0x0088ff88, "Maze Walls");
     
-    r.bot = baseY - 240;
+    r.bot = baseY - lineSpacing * 5;
     ggprint8b(&r, 0, 0x00ffffff, "name");
     
-    r.bot = baseY - 270;
-    ggprint8b(&r, 0, 0x0088ff88, "Role placeholder");
+    r.bot = baseY - lineSpacing * 6;
+    ggprint8b(&r, 0, 0x0088ff88, "Collision Detection");
     
-    r.bot = baseY - 330;
+    r.bot = baseY - lineSpacing * 7;
     ggprint8b(&r, 0, 0x00ffffff, "name");
     
-    r.bot = baseY - 360;
-    ggprint8b(&r, 0, 0x0088ff88, "role");
+    r.bot = baseY - lineSpacing * 8;
+    ggprint8b(&r, 0, 0x0088ff88, "Movement");
     
-    r.bot = baseY - 420;
-    ggprint8b(&r, 0, 0x00ffffff, "name");
+    r.bot = baseY - lineSpacing * 9;
+    ggprint8b(&r, 0, 0x00ffffff, "role");
     
-    r.bot = baseY - 450;
-    ggprint8b(&r, 0, 0x0088ff88, "");
-    
-    r.bot = baseY - 480;
-    ggprint8b(&r, 0, 0x0088ff88, "");
+    r.bot = baseY - lineSpacing * 10;
+    ggprint8b(&r, 0, 0x0088ff88, "name");
     
     // Draw back button
     backButton.render();
