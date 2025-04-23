@@ -29,7 +29,7 @@
 typedef float Flt;
 typedef float Vec[3];
 typedef Flt	Matrix[4][4];
-
+Maze maze;
 //macros
 #define rnd() (((Flt)rand())/(Flt)RAND_MAX)
 #define random(a) (rand()%a)
@@ -264,7 +264,7 @@ public:
 		glViewport(0, 0, (GLint)width, (GLint)height);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-		glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
+		glOrtho(0, gl.xres, 0, gl.yres, -1.0f, 1.0f);
 		set_title();
 	}
 	void setup_screen_res(const int w, const int h) {
@@ -869,6 +869,7 @@ void physics()
 	}
 }
 
+    static bool initialized = false;
 void render()
 {
 	if (screenManager.getState() != GAME) {
@@ -876,22 +877,30 @@ void render()
         return;
     }
 	
-	Rect r;
+	//Rect r;
 	mgonzalez3 obj;
     DrawStickman o;
-
-    obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
+    if (!initialized) {
+    maze.generate(45, 33);
+    initialized = true;
+    }
+    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-	r.bot = gl.yres - 20;
-	r.left = 10;
-	r.center = 0;
-	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+    maze.render();
+    obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
+    //glClear(GL_COLOR_BUFFER_BIT);
+	//r.bot = gl.yres - 20;
+	//r.left = 10;
+	//r.center = 0;
+	//ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
+	//ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+	//ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
 	//-------------------------------------------------------------------------
 	//Draw the ship
-    obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
-    o.Stickman(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+    //obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
+     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+     //glClear(GL_COLOR_BUFFER_BIT);
+   o.Stickman(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
 	/*
     glColor3fv(g.ship.color);
 	glPushMatrix();

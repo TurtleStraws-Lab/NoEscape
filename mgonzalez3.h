@@ -1,6 +1,16 @@
-// mgonzalez3.h
 #ifndef MGONZALEZ3_H
 #define MGONZALEZ3_H
+
+class Maze {
+public:
+    void generate(int width, int height);
+    void render();
+
+private:
+    void carveMaze(int x, int y);
+    int width, height;
+    int** grid; // 2D grid: 0 = wall, 1 = path
+};
 
 class mgonzalez3 {
 public:
@@ -9,4 +19,3 @@ public:
 };
 
 #endif // MGONZALEZ3_H
-
