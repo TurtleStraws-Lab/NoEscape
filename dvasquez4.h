@@ -18,6 +18,15 @@ class drawCircle
 		drawCircle(float x, float y, float r, int num_seg);
 };
 
+class calcAngle
+{
+    private:
+    float x, y, a, l;
+    public:
+    calcAngle(float x, float y, float a, float l);
+
+};
+
 class DrawStickman {
 	public:
 		void Stickman(float r, float b, float a, float z);
