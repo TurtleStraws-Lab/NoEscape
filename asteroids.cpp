@@ -23,6 +23,7 @@
 #include "mgonzalez3.h"
 #include "gregpala.h"
 #include "ssayedmnasim.h"
+#include "dvasquez4.h"
 
 //defined types
 typedef float Flt;
@@ -877,6 +878,7 @@ void render()
 	
 	Rect r;
 	mgonzalez3 obj;
+    DrawStickman o;
 
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -889,7 +891,9 @@ void render()
 	//-------------------------------------------------------------------------
 	//Draw the ship
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
-	glColor3fv(g.ship.color);
+    o.Stickman(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+	/*
+    glColor3fv(g.ship.color);
 	glPushMatrix();
 	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
 	//float angle = atan2(ship.dir[1], ship.dir[0]);
@@ -910,7 +914,7 @@ void render()
 	glVertex2f(0.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
-    /*
+   
 	if (gl.keys[XK_Up] || g.mouseThrustOn) {
 		int i;
 		//draw thrust
