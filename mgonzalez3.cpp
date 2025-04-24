@@ -20,7 +20,7 @@ void Maze::generate(int w, int h) {
         for (int j = 0; j < width; ++j)
             grid[i][j] = 0; //initalize all cells as walls
     }
-static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
+    static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
     carveMaze(1, 1); // Start carving from cell (1,1)
 }
 
@@ -47,19 +47,19 @@ void Maze::carveMaze(int x, int y) {
 }
 
 void Maze::render() {
-    
+
     float cellSize = 14.5;
-                glPushMatrix();
-                glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
+    glPushMatrix();
+    glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
     glColor3f(1.0f, 1.0f, 1.0f); // White lines
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             if (grid[y][x] == 0) { // draw wall cell
                 float xpos = x * cellSize; 
-                    //- (width * cellSize / 2);
+                //- (width * cellSize / 2);
                 float ypos = (height - y - 1) * cellSize;
-                   // - (height * cellSize / 2);
+                // - (height * cellSize / 2);
                 glBegin(GL_LINE_LOOP);
                 glVertex2f(xpos, ypos);
                 glVertex2f(xpos + cellSize, ypos);
@@ -70,7 +70,7 @@ void Maze::render() {
         }
     }
 
-                glPopMatrix();
+    glPopMatrix();
 }
 void mgonzalez3::darkBack(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
@@ -84,8 +84,8 @@ void mgonzalez3::lighting(float pos1, float pos2, float area) {
     glPushMatrix();
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    
-    
+
+
     glColor4f(1.0f, 1.0f, 0.0f, 0.1f);
 
     glBegin(GL_TRIANGLE_FAN);
@@ -108,6 +108,65 @@ void mgonzalez3::lighting(float pos1, float pos2, float area) {
     glPopMatrix();
 }
 
+void Coin::render(int xres, int yres, float area) {
+    //darkBack(0.0f, 0.0f, 0.0f, 1.0f); 
+    glPushMatrix();
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+
+    glBegin(GL_TRIANGLE_FAN);
+
+    glVertex2f(xres, yres);
+
+    int circle = 100;
+
+    for (int i = 0; i <= circle; i++) {
+        float angle = (i / (float)circle) * 2.0f * M_PI;
+
+        float x = xres + cos(angle) * area;
+        float y = yres + sin(angle) * area;
+        glVertex2f(x, y);
+        }
+    
+
+    glEnd();
+
+    glPopMatrix();
+}
+
+    bool coin1 = false;
+    bool coin2 = false;
+    bool coin3 = false;
+    bool coin4 = false;
+
+void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, int yres2, int yres3, int yres4, float pos1, float pos2)
+{
+    Coin coin;
+if (pos1 != xres1 && pos2 != yres1 && !coin1) {
+    coin.render(xres1, yres1, 5.0f);
+   // coins disappear two at a time for some reason 
+} else {
+    coin1 = true;
+}
+if (pos1 != xres2 && pos2 != yres2 && !coin2) {
+    coin.render(xres2, yres2, 5.0f);
+} else {
+coin2 = true;
+}
+if (pos1 != xres3 && pos2 != yres3 && !coin3) {
+    coin.render(xres3, yres3, 5.0f);
+} else {
+    coin3 = true;
+}
+if (pos1 != xres4 && pos2 != yres4 && !coin4) {
+    coin.render(xres4, yres4, 5.0f);
+} else {
+    coin4 = true;
+}
 
 
 
+}

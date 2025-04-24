@@ -30,6 +30,7 @@ typedef float Flt;
 typedef float Vec[3];
 typedef Flt	Matrix[4][4];
 Maze maze;
+Coin coin;
 //macros
 #define rnd() (((Flt)rand())/(Flt)RAND_MAX)
 #define random(a) (rand()%a)
@@ -887,6 +888,8 @@ void render()
     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     maze.render();
+    coin.coinCollect(16, 624, 624, 16, 25, 25, 457, 457, g.ship.pos[0], g.ship.pos[1]); 
+
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
 	//r.bot = gl.yres - 20;
