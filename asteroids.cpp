@@ -878,7 +878,7 @@ void render()
         return;
     }
 	
-	//Rect r;
+	Rect r;
 	mgonzalez3 obj;
     DrawStickman o;
     if (!initialized) {
@@ -892,11 +892,11 @@ void render()
 
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
-	//r.bot = gl.yres - 20;
-	//r.left = 10;
-	//r.center = 0;
+	r.bot = gl.yres - 15;
+	r.left = 10;
+	r.center = 0;
 	//ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-	//ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+	ggprint8b(&r, 16, 0x00ff0000, "Coins Collected: %i", coinsCollected);
 	//ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
 	//-------------------------------------------------------------------------
 	//Draw the ship

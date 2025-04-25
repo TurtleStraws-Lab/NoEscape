@@ -1,11 +1,13 @@
 #ifndef MGONZALEZ3_H
 #define MGONZALEZ3_H
 
+extern int coinsCollected;
+
 class Maze {
 public:
     void generate(int width, int height);
     void render();
-
+    bool isWall(float x, float y, float cellSize);
 private:
     void carveMaze(int x, int y);
     int width, height;

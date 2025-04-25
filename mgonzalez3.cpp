@@ -68,6 +68,7 @@ void Maze::render() {
                 glEnd();
             }
         }
+
     }
 
     glPopMatrix();
@@ -129,44 +130,76 @@ void Coin::render(int xres, int yres, float area) {
         float x = xres + cos(angle) * area;
         float y = yres + sin(angle) * area;
         glVertex2f(x, y);
-        }
-    
+    }
+
 
     glEnd();
 
     glPopMatrix();
 }
 
-    bool coin1 = false;
-    bool coin2 = false;
-    bool coin3 = false;
-    bool coin4 = false;
+bool coin1 = false;
+bool coin2 = false;
+bool coin3 = false;
+bool coin4 = false;
+int coinsCollected = 0;
 
 void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, int yres2, int yres3, int yres4, float pos1, float pos2)
 {
     Coin coin;
-if (pos1 != xres1 && pos2 != yres1 && !coin1) {
-    coin.render(xres1, yres1, 5.0f);
-   // coins disappear two at a time for some reason 
-} else {
-    coin1 = true;
+    if (abs(pos1 - xres1) <= 10 && abs(pos2 - yres1) <= 10 && !coin1) {
+        // coins disappear two at a time for some reason 
+        if (!coin1) {
+            coinsCollected++;
+        }
+        coin1 = true;
+    } else {
+        if(!coin1) {
+            coin.render(xres1, yres1, 5.0f);
+        }
+    }
+    if (abs(pos1 - xres2) <= 10 && abs(pos2 - yres2) <= 10 && !coin2) {
+        if (!coin2) {
+            coinsCollected++;
+        }
+        coin2 = true;
+    } else {
+        if (!coin2) {
+            coin.render(xres2, yres2, 5.0f);
+        }
+    }
+    if (abs(pos1 - xres3) <= 10 && abs(pos2 - yres3) <= 10 && !coin3) {
+        if (!coin3) {
+            coinsCollected++;
+        }
+        coin3 = true;
+    } else {
+        if (!coin3) {
+            coin.render(xres3, yres3, 5.0f);
+        }
+    }
+    if (abs(pos1 - xres4) <= 10 && abs(pos2 - yres4) <= 10 && !coin4) {
+        if (!coin4) {
+            coinsCollected++;
+        }
+        coin4 = true;
+    } else {
+        if (!coin4) {
+            coin.render(xres4, yres4, 5.0f);
+        }
+    }
+
 }
-if (pos1 != xres2 && pos2 != yres2 && !coin2) {
-    coin.render(xres2, yres2, 5.0f);
-} else {
-coin2 = true;
-}
-if (pos1 != xres3 && pos2 != yres3 && !coin3) {
-    coin.render(xres3, yres3, 5.0f);
-} else {
-    coin3 = true;
-}
-if (pos1 != xres4 && pos2 != yres4 && !coin4) {
-    coin.render(xres4, yres4, 5.0f);
-} else {
-    coin4 = true;
+
+bool Maze::isWall(float x, float y, float cellSize) {
+    int cellX = x / cellSize;
+    int cellY = (height - 1) - (y / cellSize);
+
+
+    return grid[cellY][cellX] == 0;
 }
 
 
 
-}
+
+
