@@ -880,7 +880,8 @@ void render()
 	
 	Rect r;
 	mgonzalez3 obj;
-    DrawStickman o;
+    //DrawStickman o;
+    DrawShip o2;
     if (!initialized) {
     maze.generate(45, 33);
     initialized = true;
@@ -903,7 +904,8 @@ void render()
     //obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
      //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
      //glClear(GL_COLOR_BUFFER_BIT);
-   o.Stickman(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+   o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+   //o.Stickman(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
 	/*
     glColor3fv(g.ship.color);
 	glPushMatrix();

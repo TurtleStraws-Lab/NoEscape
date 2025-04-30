@@ -11,26 +11,34 @@ typedef Flt Matrix[4][4];
 #include <GL/gl.h>
 class drawCircle
 {
-	private:
-		float x,y,r;
-		int num_seg;
-	public:
-		drawCircle(float x, float y, float r, int num_seg);
+    private:
+        float x,y,r;
+        int num_seg;
+    public:
+        drawCircle(float x, float y, float r, int num_seg);
 };
 
 class calcAngle
 {
     private:
-    float x, y, a, l;
+        float x, y, a, l;
     public:
-    calcAngle(float x, float y, float a, float l);
+        calcAngle(float x, float y, float a, float l);
+
+};
+
+class DrawShip {
+
+    public:
+        void Ship(float a, float b, float c,float d);
 
 };
 
 class DrawStickman {
-	public:
-		void Stickman(float r, float b, float a, float z);
-	
+
+    public:
+        void Stickman(float r, float b, float a, float z);
+
 };
 
 #endif
