@@ -882,12 +882,16 @@ void render()
 	mgonzalez3 obj;
     //DrawStickman o;
     DrawShip o2;
-    if (!initialized) {
+   /* if (!initialized) {
     maze.generate(45, 33);
     initialized = true;
-    }
+    } */
     //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    if (!initialized) {
+    maze.generateWithExit(45, 33);
+    initialized = true;
+    }
     maze.render();
     coin.coinCollect(16, 624, 624, 16, 25, 25, 457, 457, g.ship.pos[0], g.ship.pos[1]); 
 

@@ -6,6 +6,7 @@ extern int coinsCollected;
 class Maze {
 public:
     void generate(int width, int height);
+    void generateWithExit(int width, int height);
     void render();
     bool isWall(float x, float y, float cellSize);
 private:
