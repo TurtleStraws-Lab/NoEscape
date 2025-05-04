@@ -1,7 +1,7 @@
 //Author: Geneva Regpala
 //
 // Implementation of game screens (Loading, Menu, Credits)
-// Working on credits fixes
+// Updated for responsive UI and window resizing
 
 #include <iostream>
 #include <ctime>
@@ -58,32 +58,35 @@ void LoadingScreen::render() {
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
-    // Draw title
+    // Calculate scaling factor based on reference resolution (640x480)
+    float scaleY = scrHeight / 480.0f;
+    
+    // Draw title with scaling
     Rect r;
-    r.bot = scrHeight - 120;
+    r.bot = scrHeight - (120 * scaleY);
     r.left = scrWidth/2;
     r.center = 1;
     ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
     
-    // Draw loading text
-    r.bot = scrHeight/2 + 50;
+    // Draw loading text with scaling
+    r.bot = scrHeight/2 + (50 * scaleY);
     r.left = scrWidth/2;
     r.center = 1;
     ggprint8b(&r, 0, 0x00ffff00, "LOADING...");
     
     // Draw progress percentage
-    r.bot = scrHeight/2 - 60;
+    r.bot = scrHeight/2 - (60 * scaleY);
     r.left = scrWidth/2;
     r.center = 1;
     char progressText[32];
     snprintf(progressText, sizeof(progressText), "%.0f%%", progress);
     ggprint8b(&r, 0, 0x00ffff00, progressText);
     
-    // Draw loading bar outline
+    // Draw loading bar outline - scale with screen width and height
     int barWidth = scrWidth * 0.6;
-    int barHeight = 20;
+    int barHeight = 20 * scaleY;
     int barLeft = (scrWidth - barWidth) / 2;
-    int barTop = scrHeight/2 - 20;
+    int barTop = scrHeight/2 - (20 * scaleY);
     
     glColor3f(0.8f, 0.8f, 0.8f);
     glBegin(GL_LINE_LOOP);
@@ -102,8 +105,6 @@ void LoadingScreen::render() {
     glVertex2f(barLeft + fillWidth, barTop - barHeight);
     glVertex2f(barLeft, barTop - barHeight);
     glEnd();
-    
-    
 }
 
 int LoadingScreen::handleMouse(int x, int y, int button) {
@@ -160,12 +161,17 @@ void Button::render() {
     glVertex2f(x, y - height);
     glEnd();
     
-    // Draw button text
+    // Choose font size based on button dimensions
     Rect r;
     r.bot = y - height/2 - 4;
     r.left = x + width/2;
     r.center = 1;
-    ggprint16(&r, 0, 0x00ffffff, text);
+    
+    if (height >= 40) {
+        ggprint16(&r, 0, 0x00ffffff, text);
+    } else {
+        ggprint8b(&r, 0, 0x00ffffff, text);
+    }
 }
 
 bool Button::isClicked(int mouseX, int mouseY, int screenHeight) {
@@ -176,40 +182,52 @@ bool Button::isClicked(int mouseX, int mouseY, int screenHeight) {
             adjustedY <= y && adjustedY >= y - height);
 }
 
+void Button::updatePosition(int newX, int newY, int newWidth, int newHeight) {
+    x = newX;
+    y = newY;
+    width = newWidth;
+    height = newHeight;
+}
+
 // Menu Screen Implementation
 
 MenuScreen::MenuScreen() {
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
-    int buttonWidth = 200;
-    int buttonHeight = 50;
+    // Calculate scaling factors based on reference resolution
+    float scaleX = scrWidth / 640.0f;
+    float scaleY = scrHeight / 480.0f;
+    
+    int buttonWidth = 200 * scaleX;
+    int buttonHeight = 50 * scaleY;
     int buttonX = (scrWidth - buttonWidth) / 2;
     
     // Add Play button
-    buttons.push_back(Button(buttonX, scrHeight/2 + 30, buttonWidth, buttonHeight, "PLAY"));
+    buttons.push_back(Button(buttonX, scrHeight/2 + (30 * scaleY), buttonWidth, buttonHeight, "PLAY"));
     
     // Add Credits button
-    buttons.push_back(Button(buttonX, scrHeight/2 - 50, buttonWidth, buttonHeight, "CREDITS"));
+    buttons.push_back(Button(buttonX, scrHeight/2 - (50 * scaleY), buttonWidth, buttonHeight, "CREDITS"));
     
     selectedButton = 0;
     titlePulse = 1.0f;
     titlePulseDir = -0.01f;
 }
+
 void MenuScreen::resize(int scrWidth, int scrHeight) {
     // Recalculate button positions and sizes when window is resized
     float scaleX = scrWidth / 640.0f;
     float scaleY = scrHeight / 480.0f;
-
+    
     int buttonWidth = 200 * scaleX;
     int buttonHeight = 50 * scaleY;
     int buttonX = (scrWidth - buttonWidth) / 2;
-
+    
     // Update Play button
     if (buttons.size() > 0) {
         buttons[0].updatePosition(buttonX, scrHeight/2 + (30 * scaleY), buttonWidth, buttonHeight);
     }
-
+    
     // Update Credits button
     if (buttons.size() > 1) {
         buttons[1].updatePosition(buttonX, scrHeight/2 - (50 * scaleY), buttonWidth, buttonHeight);
@@ -241,9 +259,12 @@ void MenuScreen::render() {
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
+    // Calculate scaling factors
+    float scaleY = scrHeight / 480.0f;
+    
     // Draw title with pulsing effect
     glPushMatrix();
-    glTranslatef(scrWidth/2, scrHeight - 120, 0);
+    glTranslatef(scrWidth/2, scrHeight - (120 * scaleY), 0);
     glScalef(titlePulse, titlePulse, 1.0f);
     
     Rect r;
@@ -253,19 +274,18 @@ void MenuScreen::render() {
     ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
     glPopMatrix();
     
-    
     // Draw buttons
     for (auto &button : buttons) {
         button.render();
     }
     
-    // Draw version and copyright
-    r.bot = 30;
+    // Draw version and copyright with scaling
+    r.bot = 30 * scaleY;
     r.left = scrWidth/2;
     r.center = 1;
     ggprint8b(&r, 0, 0x00ffff00, "Version 1.0");
     
-    r.bot = 15;
+    r.bot = 15 * scaleY;
     ggprint8b(&r, 0, 0x0088ff88, "2025 NO ESCAPE TEAM 3");
 }
 
@@ -320,24 +340,25 @@ int MenuScreen::handleKey(int key) {
 
 // Credits Screen Implementation
 
-CreditsScreen::CreditsScreen()
+CreditsScreen::CreditsScreen() 
     : scrollY(0.0f),
-      backButton((screenManager.getScreenWidth() - 100) / 2,
-                 100 * (screenManager.getScreenHeight() / 480.0f),
-                 100 * (screenManager.getScreenWidth() / 640.0f),
-                 40 * (screenManager.getScreenHeight() / 480.0f),
+      backButton((screenManager.getScreenWidth() - 100) / 2, 
+                 100 * (screenManager.getScreenHeight() / 480.0f), 
+                 100 * (screenManager.getScreenWidth() / 640.0f), 
+                 40 * (screenManager.getScreenHeight() / 480.0f), 
                  "BACK") {
 }
+
 void CreditsScreen::resize(int scrWidth, int scrHeight) {
     // Recalculate back button position and size
     float scaleX = scrWidth / 640.0f;
     float scaleY = scrHeight / 480.0f;
-
+    
     int buttonWidth = 100 * scaleX;
     int buttonHeight = 40 * scaleY;
     int buttonX = (scrWidth - buttonWidth) / 2;
     int buttonY = 100 * scaleY;
-
+    
     backButton.updatePosition(buttonX, buttonY, buttonWidth, buttonHeight);
 }
 
@@ -350,13 +371,16 @@ void CreditsScreen::update() {
         scrollY = screenManager.getScreenHeight();
     }*/
 }
-// working on fixes
+
 void CreditsScreen::render() {
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
     
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
+    
+    // Calculate scaling factors
+    float scaleY = scrHeight / 480.0f;
     
     // Draw title
     Rect r;
@@ -365,7 +389,7 @@ void CreditsScreen::render() {
     r.center = 1;
     ggprint16(&r, 0, 0x00ffffff, "CREDITS");
     
-    // Draw credits
+    // Draw scrolling credits with scaling
     float baseY = scrHeight - (120 * scaleY);
     float lineSpacing = 30.0f * scaleY;
     
@@ -384,28 +408,25 @@ void CreditsScreen::render() {
     ggprint8b(&r, 0, 0x00ffffff, "Geneva Regpala");
     
     r.bot = baseY - lineSpacing * 4;
-    ggprint8b(&r, 0, 0x0088ff88, "Maze, Collision, Movement");
+    ggprint8b(&r, 0, 0x0088ff88, "Maze Walls");
     
     r.bot = baseY - lineSpacing * 5;
-    ggprint8b(&r, 0, 0x00ffffff, "Moises Gonzalez");
+    ggprint8b(&r, 0, 0x00ffffff, "name");
     
     r.bot = baseY - lineSpacing * 6;
-    ggprint8b(&r, 0, 0x0088ff88, "Backgrounds and Cutscene");
+    ggprint8b(&r, 0, 0x0088ff88, "Collision Detection");
     
     r.bot = baseY - lineSpacing * 7;
-    ggprint8b(&r, 0, 0x00ffffff, "Eve Turallo");
+    ggprint8b(&r, 0, 0x00ffffff, "name");
     
     r.bot = baseY - lineSpacing * 8;
-    ggprint8b(&r, 0, 0x0088ff88, "Ship/Stickman");
-
+    ggprint8b(&r, 0, 0x0088ff88, "Movement");
+    
     r.bot = baseY - lineSpacing * 9;
-    ggprint8b(&r, 0, 0x0088ff88, "Devin Vasquez");
+    ggprint8b(&r, 0, 0x00ffffff, "role");
     
     r.bot = baseY - lineSpacing * 10;
-    ggprint8b(&r, 0, 0x00ffffff, "Sound");
-    
-    r.bot = baseY - lineSpacing * 11;
-    ggprint8b(&r, 0, 0x0088ff88, "Sayed Jalal Sayed M Nasim");
+    ggprint8b(&r, 0, 0x0088ff88, "name");
     
     // Draw back button
     backButton.render();
@@ -456,12 +477,11 @@ ScreenManager::~ScreenManager() {
 void ScreenManager::setScreenDimensions(int width, int height) {
     screenWidth = width;
     screenHeight = height;
-
+    
     // Resize the menu and credits screens to match new dimensions
     menuScreen->resize(width, height);
     creditsScreen->resize(width, height);
 }
-
 
 void ScreenManager::update() {
     switch (currentState) {
