@@ -1,6 +1,6 @@
 CFLAGS = -I ./include
 ##LIB    = ./libggfonts.so
-LFLAGS = -lrt -lX11 -lGLU -lGL -lglut -pthread -lm -lopenal -lalut  #-lXrandr
+LFLAGS = -g -lrt -lX11 -lGLU -lGL -lglut -pthread -lm -lopenal -lalut  #-lXrandr
 
 all: asteroids
 

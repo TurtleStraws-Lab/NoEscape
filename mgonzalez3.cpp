@@ -1,6 +1,7 @@
 #include "mgonzalez3.h"
 #include <GL/gl.h>
 #include <vector>
+#include <unistd.h>
 #include <iostream>
 #include <cstdlib>
 #include <random>
@@ -33,7 +34,7 @@ void Maze::generateWithExit(int w, int h) {
     }    
 }
 
-void Maze::generate(int w, int h) {
+void Maze::Level3(int w, int h) {
     width = w;
     height = h;
 
@@ -45,6 +46,70 @@ void Maze::generate(int w, int h) {
             grid[i][j] = 0; //initalize all cells as walls
     }
     static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
+    carveMaze(1, 1); // Start carving from cell (1,1)
+
+    grid[5][22] = 1;
+    if (grid[5][22] == 0) { 
+    grid[5][22] = 1;
+    sleep(1);
+    }
+    if (grid[5][22] == 1) { 
+        grid[5][22] = 0;
+        sleep(1);
+    }
+
+    for (int x = width - 2; x > 0; --x) {
+        if (grid[height - 2][x] == 1) { // Find path on bottom row
+            grid[height - 1][x] = 1;    // Carve an exit
+            break;
+        }
+    }
+}    
+
+/* void Maze::generate(int w, int h) {
+    width = w;
+    height = h;
+
+    // Allocate and initialize grid with walls (0)
+    grid = new int*[height];
+    for (int i = 0; i < height; ++i) {
+        grid[i] = new int[width];
+        for (int j = 0; j < width; ++j)
+            grid[i][j] = 0; //initalize all cells as walls
+    }
+    
+    static std::mt19937 g(45); 
+    carveMaze(1, 1); // Start carving from cell (1,1)
+
+} */
+
+void Maze::generate(int w, int h) {
+    width = w;
+    height = h;
+
+    // Allocate and initialize grid with walls (0)
+    grid = new int*[height];
+    for (int i = 0; i < height; ++i) {
+        grid[i] = new int[width];
+        for (int j = 0; j < width; ++j)
+            grid[i][j] = 0; //initalize all cells as walls
+    }
+
+    static std::mt19937 g(45); 
+    /* for (int a = 0; a <= 45; a+=2) {
+    for (int k = 0; k < height; ++k) {
+        grid[k][a] = 1;
+
+
+    } 
+    } */
+     grid[15][22] = 1;
+    grid[16][22] = 1;
+    grid[17][22] = 1;
+    grid[18][22] = 1;
+    grid[18][22] = 1;
+    grid[20][22] = 1;
+    grid[21][22] = 1; 
     carveMaze(1, 1); // Start carving from cell (1,1)
 
 }
@@ -71,11 +136,37 @@ void Maze::carveMaze(int x, int y) {
     }
 }
 
-void Maze::render() {
+bool Maze::isWall(float x, float y, float cellSize, float xres, float yres) {    
 
-    float cellSize = 14.5;
+    float mazeWidth = width * cellSize;
+    float mazeHeight = height * cellSize;
+
+    float placeX = (xres - mazeWidth) / 2.0f;
+    float placeY = (yres - mazeHeight) / 2.0f;
+
+    // Adjust ship position to grid space
+    int cellX = static_cast<int>((x - placeX) / cellSize);
+    int cellY = static_cast<int>((y - placeY) / cellSize);
+
+    // Out-of-bounds check
+    if (cellX < 0 || cellX >= width || cellY < 0 || cellY >= height) {
+        return true; // Treat out-of-bounds as a wall
+    }
+
+    return grid[cellY][cellX] == 0;
+
+}
+
+void Maze::render(int xres, int yres) {
+
+    float cellSize = 14.5; //14.5
     glPushMatrix();
-    glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
+    float mazeWidth = width * cellSize;
+    float mazeHeight = height * cellSize;
+    float placeX = (xres - mazeWidth) / 2.0f;
+    float placeY = (yres - mazeHeight) / 2.0f;
+    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
+    glTranslatef(placeX, placeY, 0.0f);
     glColor3f(0.0f, 0.0f, 1.0f); // White lines
 
     for (int y = 0; y < height; ++y) {
@@ -94,24 +185,31 @@ void Maze::render() {
             }
         }
 
+   /*  if (grid[5][22] == 0) { 
+    grid[5][22] = 1;
+    
+    }
+    else if (grid[5][22] == 1) { 
+        grid[5][22] = 0;
+       
+    } */
     }
 
     glPopMatrix();
+
 }
+
 void mgonzalez3::darkBack(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-
 void mgonzalez3::lighting(float pos1, float pos2, float area) {
     //darkBack(0.0f, 0.0f, 0.0f, 1.0f); 
     glPushMatrix();
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-
-
     glColor4f(1.0f, 1.0f, 0.0f, 0.1f);
 
     glBegin(GL_TRIANGLE_FAN);
@@ -133,11 +231,6 @@ void mgonzalez3::lighting(float pos1, float pos2, float area) {
 
     glPopMatrix();
 }
-
-
-
-
-
 
 void Coin::render(int xres, int yres, float area) {
     //darkBack(0.0f, 0.0f, 0.0f, 1.0f); 
@@ -174,7 +267,8 @@ bool coin3 = false;
 bool coin4 = false;
 int coinsCollected = 0;
 
-void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, int yres2, int yres3, int yres4, float pos1, float pos2)
+void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
+        int yres2, int yres3, int yres4, float pos1, float pos2)
 {
     Coin coin;
     if (abs(pos1 - xres1) <= 10 && abs(pos2 - yres1) <= 10 && !coin1) {
@@ -220,15 +314,6 @@ void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, in
     }
 
 }
-
-bool Maze::isWall(float x, float y, float cellSize) {
-    int cellX = x / cellSize;
-    int cellY = (height - 1) - (y / cellSize);
-
-
-    return grid[cellY][cellX] == 0;
-}
-
 
 
 
