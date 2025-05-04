@@ -349,25 +349,28 @@ void CreditsScreen::render() {
     ggprint8b(&r, 0, 0x00ffffff, "Geneva Regpala");
     
     r.bot = baseY - lineSpacing * 4;
-    ggprint8b(&r, 0, 0x0088ff88, "Maze Walls");
+    ggprint8b(&r, 0, 0x0088ff88, "Maze, Collision, Movement");
     
     r.bot = baseY - lineSpacing * 5;
-    ggprint8b(&r, 0, 0x00ffffff, "name");
+    ggprint8b(&r, 0, 0x00ffffff, "Moises Gonzalez");
     
     r.bot = baseY - lineSpacing * 6;
-    ggprint8b(&r, 0, 0x0088ff88, "Collision Detection");
+    ggprint8b(&r, 0, 0x0088ff88, "Backgrounds and Cutscene");
     
     r.bot = baseY - lineSpacing * 7;
-    ggprint8b(&r, 0, 0x00ffffff, "name");
+    ggprint8b(&r, 0, 0x00ffffff, "Eve Turallo");
     
     r.bot = baseY - lineSpacing * 8;
-    ggprint8b(&r, 0, 0x0088ff88, "Movement");
-    
+    ggprint8b(&r, 0, 0x0088ff88, "Ship/Stickman");
+
     r.bot = baseY - lineSpacing * 9;
-    ggprint8b(&r, 0, 0x00ffffff, "role");
+    ggprint8b(&r, 0, 0x0088ff88, "Devin Vasquez");
     
     r.bot = baseY - lineSpacing * 10;
-    ggprint8b(&r, 0, 0x0088ff88, "name");
+    ggprint8b(&r, 0, 0x00ffffff, "Sound");
+    
+    r.bot = baseY - lineSpacing * 11;
+    ggprint8b(&r, 0, 0x0088ff88, "Sayed Jalal Sayed M Nasim");
     
     // Draw back button
     backButton.render();
