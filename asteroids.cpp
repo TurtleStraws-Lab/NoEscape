@@ -267,6 +267,7 @@ public:
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glOrtho(0, gl.xres, 0, gl.yres, -1.0f, 1.0f);
 		set_title();
+		screenManager.setScreenDimensions(width, height);
 	}
 	void setup_screen_res(const int w, const int h) {
 		gl.xres = w;
@@ -388,6 +389,7 @@ void init_opengl(void)
 	//Do this to allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
+	screenManager.setScreenDimensions(gl.xres, gl.yres);
 }
 
 void normalize2d(Vec v)

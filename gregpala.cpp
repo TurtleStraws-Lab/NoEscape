@@ -196,6 +196,25 @@ MenuScreen::MenuScreen() {
     titlePulse = 1.0f;
     titlePulseDir = -0.01f;
 }
+void MenuScreen::resize(int scrWidth, int scrHeight) {
+    // Recalculate button positions and sizes when window is resized
+    float scaleX = scrWidth / 640.0f;
+    float scaleY = scrHeight / 480.0f;
+
+    int buttonWidth = 200 * scaleX;
+    int buttonHeight = 50 * scaleY;
+    int buttonX = (scrWidth - buttonWidth) / 2;
+
+    // Update Play button
+    if (buttons.size() > 0) {
+        buttons[0].updatePosition(buttonX, scrHeight/2 + (30 * scaleY), buttonWidth, buttonHeight);
+    }
+
+    // Update Credits button
+    if (buttons.size() > 1) {
+        buttons[1].updatePosition(buttonX, scrHeight/2 - (50 * scaleY), buttonWidth, buttonHeight);
+    }
+}
 
 void MenuScreen::update() {
     // Update title pulsing animation
@@ -301,9 +320,25 @@ int MenuScreen::handleKey(int key) {
 
 // Credits Screen Implementation
 
-CreditsScreen::CreditsScreen() 
+CreditsScreen::CreditsScreen()
     : scrollY(0.0f),
-      backButton((screenManager.getScreenWidth() - 100) / 2, 100, 100, 40, "BACK") {
+      backButton((screenManager.getScreenWidth() - 100) / 2,
+                 100 * (screenManager.getScreenHeight() / 480.0f),
+                 100 * (screenManager.getScreenWidth() / 640.0f),
+                 40 * (screenManager.getScreenHeight() / 480.0f),
+                 "BACK") {
+}
+void CreditsScreen::resize(int scrWidth, int scrHeight) {
+    // Recalculate back button position and size
+    float scaleX = scrWidth / 640.0f;
+    float scaleY = scrHeight / 480.0f;
+
+    int buttonWidth = 100 * scaleX;
+    int buttonHeight = 40 * scaleY;
+    int buttonX = (scrWidth - buttonWidth) / 2;
+    int buttonY = 100 * scaleY;
+
+    backButton.updatePosition(buttonX, buttonY, buttonWidth, buttonHeight);
 }
 
 void CreditsScreen::update() {
@@ -325,14 +360,14 @@ void CreditsScreen::render() {
     
     // Draw title
     Rect r;
-    r.bot = scrHeight - 80;
+    r.bot = scrHeight - (80 * scaleY);
     r.left = scrWidth/2;
     r.center = 1;
     ggprint16(&r, 0, 0x00ffffff, "CREDITS");
     
-    // Draw scrolling credits
-    float baseY = scrHeight - 120;
-    float lineSpacing = 30.0f;
+    // Draw credits
+    float baseY = scrHeight - (120 * scaleY);
+    float lineSpacing = 30.0f * scaleY;
     
     r.bot = baseY;
     r.left = scrWidth/2;
@@ -417,6 +452,16 @@ ScreenManager::~ScreenManager() {
     delete menuScreen;
     delete creditsScreen;
 }
+
+void ScreenManager::setScreenDimensions(int width, int height) {
+    screenWidth = width;
+    screenHeight = height;
+
+    // Resize the menu and credits screens to match new dimensions
+    menuScreen->resize(width, height);
+    creditsScreen->resize(width, height);
+}
+
 
 void ScreenManager::update() {
     switch (currentState) {
