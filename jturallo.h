@@ -5,7 +5,11 @@
 #include <string>
 #include <GL/glut.h>
 #include <sstream>
+#include <X11/xlib.h>
 //might need more for images
+
+#define STEP 10
+#define DELAY 100000
 
 class Textbox {
     private:
@@ -33,6 +37,14 @@ class Image {
         ~Image();
         Image(const char *fname);
 };
+
+void draw_walls(Display *d, Window w, GC gc);
+void draw_stickman(Display *d, Window w, GC gc, int x, int y);
+void draw_stickman_flipped(Display *d, Window w, GC gc, int x, int y);
+void draw_red_x_stroke_by_stroke(Display *d, Window w, GC gc, int x, int y);
+void stickman_turn_around(Display *d, Window w, GC gc, int x, int y);
+void animate_walk_back(Display *d, Window w, GC gc, int x, int y);
+void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y);
 
 extern Textbox* title;
 extern Textbox* names;
