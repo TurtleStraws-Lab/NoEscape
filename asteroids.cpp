@@ -67,6 +67,7 @@ public:
 	int xres, yres;
 	char keys[65536];
 	int mouse_cursor_on;
+	int fullscreen = 0;
 	Global() {
 		xres = 840;  //640 original value
 		yres = 680;  //480 original value
@@ -202,7 +203,7 @@ public:
 		Window root = DefaultRootWindow(dpy);
 		XWindowAttributes getWinAttr;
 		XGetWindowAttributes(dpy, root, &getWinAttr);
-		int fullscreen = 0;
+		//int fullscreen = 0;
 		gl.xres = w;
 		gl.yres = h;
 		if (!w && !h) {
@@ -213,7 +214,7 @@ public:
 			//so keystrokes are linked to the root window.
 			XGrabKeyboard(dpy, root, False,
 				GrabModeAsync, GrabModeAsync, CurrentTime);
-			fullscreen=1;
+			gl.fullscreen=1;
 		}
 		XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
 		if (vi == NULL) {
@@ -226,7 +227,7 @@ public:
 			PointerMotionMask | MotionNotify | ButtonPress | ButtonRelease |
 			StructureNotifyMask | SubstructureNotifyMask;
 		unsigned int winops = CWBorderPixel|CWColormap|CWEventMask;
-		if (fullscreen) {
+		if (gl.fullscreen) {
 			winops |= CWOverrideRedirect;
 			swa.override_redirect = True;
 		}
@@ -906,7 +907,20 @@ void render()
     initialized = true;
     }
     maze.render(gl.xres, gl.yres);
-    coin.coinCollect(16, 624, 624, 16, 25, 25, 457, 457, g.ship.pos[0], g.ship.pos[1]); 
+    //void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
+    //xres 840 yres 680 
+    if (gl.fullscreen == 0) {
+    coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
+           (gl.xres/2) - 305, (gl.xres/2) - 305, (gl.yres/2)-215, 
+           (gl.yres/2)+215, (gl.yres/2) + 215, 
+           (gl.yres/2) - 215, g.ship.pos[0], g.ship.pos[1]); 
+    }
+    if (gl.fullscreen == 1) {
+    coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
+            (gl.xres/2) - 305, (gl.xres/2) - 305, 
+            (gl.yres/2) - 215, (gl.yres/2)+215, (gl.yres/2) + 215, 
+            (gl.yres/2) - 215, g.ship.pos[0], g.ship.pos[1]); 
+    }
 
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     //glClear(GL_COLOR_BUFFER_BIT);

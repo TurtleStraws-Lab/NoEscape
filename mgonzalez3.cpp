@@ -10,6 +10,9 @@
 
 
 using namespace std;
+    
+float cellSize = 14.5; //14.5
+                       
 void Maze::generateWithExit(int w, int h) {
     width = w;
     height = h;
@@ -50,8 +53,8 @@ void Maze::Level3(int w, int h) {
 
     grid[5][22] = 1;
     if (grid[5][22] == 0) { 
-    grid[5][22] = 1;
-    sleep(1);
+        grid[5][22] = 1;
+        sleep(1);
     }
     if (grid[5][22] == 1) { 
         grid[5][22] = 0;
@@ -67,26 +70,26 @@ void Maze::Level3(int w, int h) {
 }    
 
 /* void Maze::generate(int w, int h) {
-    width = w;
-    height = h;
+   width = w;
+   height = h;
 
-    // Allocate and initialize grid with walls (0)
-    grid = new int*[height];
-    for (int i = 0; i < height; ++i) {
-        grid[i] = new int[width];
-        for (int j = 0; j < width; ++j)
-            grid[i][j] = 0; //initalize all cells as walls
-    }
-    
-    static std::mt19937 g(45); 
-    carveMaze(1, 1); // Start carving from cell (1,1)
+// Allocate and initialize grid with walls (0)
+grid = new int*[height];
+for (int i = 0; i < height; ++i) {
+grid[i] = new int[width];
+for (int j = 0; j < width; ++j)
+grid[i][j] = 0; //initalize all cells as walls
+}
+
+static std::mt19937 g(45); 
+carveMaze(1, 1); // Start carving from cell (1,1)
 
 } */
 
 void Maze::generate(int w, int h) {
+    
     width = w;
     height = h;
-
     // Allocate and initialize grid with walls (0)
     grid = new int*[height];
     for (int i = 0; i < height; ++i) {
@@ -94,16 +97,13 @@ void Maze::generate(int w, int h) {
         for (int j = 0; j < width; ++j)
             grid[i][j] = 0; //initalize all cells as walls
     }
-
     static std::mt19937 g(45); 
     /* for (int a = 0; a <= 45; a+=2) {
-    for (int k = 0; k < height; ++k) {
-        grid[k][a] = 1;
-
-
-    } 
-    } */
-     grid[15][22] = 1;
+       for (int k = 0; k < height; ++k) {
+       grid[k][a] = 1;
+       } 
+       } */
+    grid[15][22] = 1;
     grid[16][22] = 1;
     grid[17][22] = 1;
     grid[18][22] = 1;
@@ -159,7 +159,6 @@ bool Maze::isWall(float x, float y, float cellSize, float xres, float yres) {
 
 void Maze::render(int xres, int yres) {
 
-    float cellSize = 14.5; //14.5
     glPushMatrix();
     float mazeWidth = width * cellSize;
     float mazeHeight = height * cellSize;
@@ -185,14 +184,14 @@ void Maze::render(int xres, int yres) {
             }
         }
 
-   /*  if (grid[5][22] == 0) { 
-    grid[5][22] = 1;
-    
-    }
-    else if (grid[5][22] == 1) { 
-        grid[5][22] = 0;
-       
-    } */
+        /*  if (grid[5][22] == 0) { 
+            grid[5][22] = 1;
+
+            }
+            else if (grid[5][22] == 1) { 
+            grid[5][22] = 0;
+
+            } */
     }
 
     glPopMatrix();
@@ -238,7 +237,6 @@ void Coin::render(int xres, int yres, float area) {
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-
     glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
 
     glBegin(GL_TRIANGLE_FAN);
@@ -268,9 +266,9 @@ bool coin4 = false;
 int coinsCollected = 0;
 
 void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
-        int yres2, int yres3, int yres4, float pos1, float pos2)
-{
+        int yres2, int yres3, int yres4, float pos1, float pos2) {
     Coin coin;
+
     if (abs(pos1 - xres1) <= 10 && abs(pos2 - yres1) <= 10 && !coin1) {
         // coins disappear two at a time for some reason 
         if (!coin1) {
