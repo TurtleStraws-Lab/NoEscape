@@ -5,7 +5,7 @@
 #include <string>
 #include <GL/glut.h>
 #include <sstream>
-#include <X11/xlib.h>
+#include <X11/Xlib.h>
 //might need more for images
 
 #define STEP 10
