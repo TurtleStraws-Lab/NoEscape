@@ -13,13 +13,16 @@ using namespace std;
 
 static ALuint buffer;
 static ALuint source;
-static float currentVolume = 0.5f; 
+static float currentVolume = 1.0f; 
 
 // Loading background sound
+/*
 bool initSound() {
-    alutInit(0, NULL);
+    int argc =0;
+    char *argv[] = { NULL };
+    alutInit(&argc, argv);
 
-    buffer = alutCreateBufferFromFile("sounds/background.wav");
+    buffer = alutCreateBufferFromFile("background_fixed.wav");
     if (buffer == AL_NONE) {
         cerr << "Error loading sound file.\n";
         return false;
@@ -31,12 +34,55 @@ bool initSound() {
     alSourcef(source, AL_GAIN, currentVolume);
 
     return true;
+}*/
+
+
+bool initSound() {
+    cout << "[DEBUG] Initializing ALUT..." << endl;
+
+    int argc = 0;
+    char *argv[] = { NULL };
+    if (!alutInit(&argc, argv)) {
+        cerr << "[ERROR] alutInit failed: " << alutGetErrorString(alutGetError()) << endl;
+        return false;
+    }
+
+    cout << "[DEBUG] Loading sound file: background.wav" << endl;
+    buffer = alutCreateBufferFromFile("background.wav");
+    if (buffer == AL_NONE) {
+        cerr << "[ERROR] Failed to load sound file: " << alutGetErrorString(alutGetError()) << endl;
+        return false;
+    }
+
+    alGenSources(1, &source);
+    if (alGetError() != AL_NO_ERROR) {
+        cerr << "[ERROR] Failed to generate audio source." << endl;
+        return false;
+    }
+
+    alSourcei(source, AL_BUFFER, buffer);
+    alSourcei(source, AL_LOOPING, AL_TRUE);
+    alSourcef(source, AL_GAIN, currentVolume);
+
+    cout << "[DEBUG] Sound initialized successfully." << endl;
+    return true;
 }
 
 
 // start the sound
+/*
 void startBackgroundSound() {
     alSourcePlay(source);
+}*/
+void startBackgroundSound() {
+    cout << "[DEBUG] Attempting to play background sound..." << endl;
+    alSourcePlay(source);
+    ALenum error = alGetError();
+    if (error != AL_NO_ERROR) {
+        cerr << "[ERROR] Failed to play sound: " << alutGetErrorString(error) << endl;
+    } else {
+        cout << "[DEBUG] Background sound playing." << endl;
+    }
 }
 
 // fucntion to increase sound
