@@ -868,16 +868,16 @@ void physics()
        g.ship.vel[0] = 1.0f;
     }
     //-----------------------------------------------
-    //float newX = g.ship.pos[0] + g.ship.vel[0];
-    //float newY = g.ship.pos[1] + g.ship.vel[1];
+    float newX = g.ship.pos[0] + g.ship.vel[0];
+    float newY = g.ship.pos[1] + g.ship.vel[1];
 
-   /* if (!maze.isWall(newX, newY, 24.5, gl.xres, gl.yres)) {
+    if (!maze.isWall(newX, newY, 24.5, gl.xres, gl.yres)) {
     g.ship.pos[0] = newX;
     g.ship.pos[1] = newY;
     } else {
     g.ship.vel[0] = 0.0f;
     g.ship.vel[1] = 0.0f;
-    } */
+    } 
 
 	if (gl.keys[XK_space]) {
 		//a little time between each bullet
@@ -946,21 +946,28 @@ void render()
     initialized = true;
     } */
 
-    if (!initialized) {
+     if (!initialized) {
     maze.Level3(45,33);
     initialized = true;
     }
+    maze.renderLevel3(gl.xres, gl.yres); 
 
-    maze.renderLevel3(gl.xres, gl.yres);
+
     //void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
     //xres 840 yres 680 
     if (gl.fullscreen == 0) {
+    g.ship.pos[0] = gl.xres / 2;
+    g.ship.pos[1] = gl.yres / 2;
+    o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
            (gl.xres/2) - 305, (gl.xres/2) - 305, (gl.yres/2)-215, 
            (gl.yres/2)+215, (gl.yres/2) + 215, 
            (gl.yres/2) - 215, g.ship.pos[0], g.ship.pos[1]); 
     }
     if (gl.fullscreen == 1) {
+    g.ship.pos[0] = gl.xres / 2;
+    g.ship.pos[1] = gl.yres / 2;
+   o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
             (gl.xres/2) - 305, (gl.xres/2) - 305, 
             (gl.yres/2) - 215, (gl.yres/2)+215, (gl.yres/2) + 215, 
@@ -980,5 +987,5 @@ void render()
     //obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
      //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
      //glClear(GL_COLOR_BUFFER_BIT);
-   o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+   //o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
 }

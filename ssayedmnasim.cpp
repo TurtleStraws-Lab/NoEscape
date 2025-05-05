@@ -48,7 +48,7 @@ bool initSound() {
     }
 
     cout << "[DEBUG] Loading sound file: background.wav" << endl;
-    buffer = alutCreateBufferFromFile("background.wav");
+    buffer = alutCreateBufferFromFile("background_fixed.wav");
     if (buffer == AL_NONE) {
         cerr << "[ERROR] Failed to load sound file: " << alutGetErrorString(alutGetError()) << endl;
         return false;

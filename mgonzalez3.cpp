@@ -52,16 +52,6 @@ void Maze::Level3(int w, int h) {
     static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
     carveMaze(1, 1); // Start carving from cell (1,1)
 
-    grid[5][22] = 1;
-    if (grid[5][22] == 0) { 
-        grid[5][22] = 1;
-        sleep(1);
-    }
-    if (grid[5][22] == 1) { 
-        grid[5][22] = 0;
-        sleep(1);
-    }
-
     for (int x = width - 2; x > 0; --x) {
         if (grid[height - 2][x] == 1) { // Find path on bottom row
             grid[height - 1][x] = 1;    // Carve an exit
@@ -83,21 +73,24 @@ void Maze::generate(int w, int h) {
             grid[i][j] = 0; //initalize all cells as walls
     }
     static std::mt19937 g(45); 
-    /* for (int a = 0; a <= 45; a+=2) {
+     for (int a = 15; a <= 30; a+=1) {
        for (int k = 0; k < height; ++k) {
        grid[k][a] = 1;
        } 
-       } */
-    grid[15][22] = 1;
+       } 
+   /* grid[15][22] = 1;
     grid[16][22] = 1;
     grid[17][22] = 1;
-    grid[18][22] = 1;
+   grid[18][22] = 1;
     grid[18][22] = 1;
     grid[20][22] = 1;
-    grid[21][22] = 1; 
-    carveMaze(1, 1); // Start carving from cell (1,1)
+    grid[21][22] = 1; */ 
+    //carveMaze(1, 1); // Start carving from cell (1,1)
 
 }
+
+
+
 
 void Maze::carveMaze(int x, int y) {
     static const int DX[4] = { 0, 0, -1, 1};
