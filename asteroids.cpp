@@ -268,6 +268,8 @@ public:
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glOrtho(0, gl.xres, 0, gl.yres, -1.0f, 1.0f);
 		set_title();
+
+        screenManager.setScreenDimensions(width, height);
 	}
 	void setup_screen_res(const int w, const int h) {
 		gl.xres = w;
@@ -389,6 +391,8 @@ void init_opengl(void)
 	//Do this to allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
+
+    screenManager.setScreenDimensions(gl.xres, gl.yres);
 }
 
 void normalize2d(Vec v)
@@ -634,6 +638,44 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 
 void physics()
 {
+    /*
+    if (screenManager.getState() == GAME) {
+        // Check if the game just started and we need to initialize the level
+        static GameLevel previousLevel = LEVEL_1;
+        static bool levelInitialized = false;
+
+        // If the level changed or we haven't initialized it yet
+        if (currentLevel != previousLevel || !levelInitialized) {
+            // Reset level initialization
+            initialized = false;
+
+            // Initialize the specific level
+            switch (currentLevel) {
+                case LEVEL_1:
+                    // Level 1 setup
+                    maze.generate(45, 33);
+                    break;
+                case LEVEL_2:
+                    // Level 2 setup - use a different maze generation
+                    maze.generateWithExit(45, 33);
+                    break;
+                case LEVEL_3:
+                    // Level 3 setup - use the level 3 specific maze
+                    maze.Level3(45, 33);
+                    break;
+            }
+
+            // Reset player position to starting point
+            g.ship.pos[0] = (Flt)(gl.xres/2);
+            g.ship.pos[1] = (Flt)(gl.yres/2);
+            VecZero(g.ship.vel);
+
+            // Remember the current level and mark as initialized
+            previousLevel = currentLevel;
+            levelInitialized = true;
+        }
+    }
+*/
 	Flt d0,d1,dist;
 	//Update ship position
 	g.ship.pos[0] += g.ship.vel[0];
@@ -803,7 +845,7 @@ void physics()
 			g.ship.vel[1] *= speed;
 		}
 	}*/
-
+static bool initialized = false;
     //----------------------------------------------
     //Movement Added by Sayed Jalal
     g.ship.vel[0] = 0.0f;

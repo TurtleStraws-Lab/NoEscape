@@ -43,6 +43,7 @@ public:
     bool isClicked(int mouseX, int mouseY, int screenHeight);
     void setHover(bool h) { hover = h; }
     bool getHover() { return hover; }
+    void updatePosition(int newX, int newY, int newWidth, int newHeight);
 };
 
 // Loading Screen class
@@ -80,6 +81,7 @@ public:
     void render();
     int handleMouse(int x, int y, int button);
     int handleKey(int key);
+    void resize(int scrWidth, int scrHeight);
 };
 
 // Credits Screen class
@@ -95,6 +97,7 @@ public:
     void render();
     int handleMouse(int x, int y, int button);
     int handleKey(int key);
+    void resize(int scrWidth, int scrHeight);
 };
 
 // Game Screen Manager
@@ -106,7 +109,7 @@ private:
     CreditsScreen* creditsScreen;
     int screenWidth;
     int screenHeight;
-
+void resize(int scrWidth, int scrHeight);
 public:
     ScreenManager(int width = 640, int height = 480);
     ~ScreenManager();
@@ -118,12 +121,9 @@ public:
     void setState(GameState state) { currentState = state; }
     int getScreenWidth() { return screenWidth; }
     int getScreenHeight() { return screenHeight; }
-    void setScreenDimensions(int width, int height) {
-        screenWidth = width;
-        screenHeight = height;
-    }
+    void setScreenDimensions(int width, int height);
 };
 
 extern ScreenManager screenManager;
 
-#endif // GREGPALA_H
+#endif // GREGPALA_Hvoid resize(int scrWidth, int scrHeight);void resize(int scrWidth, int scrHeight);
