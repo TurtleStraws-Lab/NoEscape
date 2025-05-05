@@ -7,12 +7,13 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <chrono>
 
 
 using namespace std;
-    
+
 float cellSize = 14.5; //14.5
-                       
+
 void Maze::generateWithExit(int w, int h) {
     width = w;
     height = h;
@@ -69,25 +70,9 @@ void Maze::Level3(int w, int h) {
     }
 }    
 
-/* void Maze::generate(int w, int h) {
-   width = w;
-   height = h;
 
-// Allocate and initialize grid with walls (0)
-grid = new int*[height];
-for (int i = 0; i < height; ++i) {
-grid[i] = new int[width];
-for (int j = 0; j < width; ++j)
-grid[i][j] = 0; //initalize all cells as walls
-}
-
-static std::mt19937 g(45); 
-carveMaze(1, 1); // Start carving from cell (1,1)
-
-} */
 
 void Maze::generate(int w, int h) {
-    
     width = w;
     height = h;
     // Allocate and initialize grid with walls (0)
@@ -157,7 +142,30 @@ bool Maze::isWall(float x, float y, float cellSize, float xres, float yres) {
 
 }
 
-void Maze::render(int xres, int yres) {
+void Maze::renderLevel3(int xres, int yres) {
+    static auto change = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - change);
+
+    if (elapsed.count() >= 2) {
+        if (grid[5][22] == 0) {
+            grid[5][22] = 1;
+        } else {
+            grid[5][22] = 0;
+        }
+        if (grid[10][27] == 0) {
+            grid[10][27] = 1;
+        } else {
+            grid[10][27] = 0;
+        }
+        change = now;
+        if (grid[7][14] == 0) {
+            grid[7][14] = 1;
+        } else {
+            grid[7][14] = 0;
+        }
+        change = now;
+    }
 
     glPushMatrix();
     float mazeWidth = width * cellSize;
@@ -184,20 +192,43 @@ void Maze::render(int xres, int yres) {
             }
         }
 
-        /*  if (grid[5][22] == 0) { 
-            grid[5][22] = 1;
-
-            }
-            else if (grid[5][22] == 1) { 
-            grid[5][22] = 0;
-
-            } */
     }
 
     glPopMatrix();
 
 }
 
+void Maze::render(int xres, int yres) {
+    glPushMatrix();
+    float mazeWidth = width * cellSize;
+    float mazeHeight = height * cellSize;
+    float placeX = (xres - mazeWidth) / 2.0f;
+    float placeY = (yres - mazeHeight) / 2.0f;
+    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
+    glTranslatef(placeX, placeY, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f); // White lines
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (grid[y][x] == 0) { // draw wall cell
+                float xpos = x * cellSize; 
+                //- (width * cellSize / 2);
+                float ypos = (height - y - 1) * cellSize;
+                // - (height * cellSize / 2);
+                glBegin(GL_LINE_LOOP);
+                glVertex2f(xpos, ypos);
+                glVertex2f(xpos + cellSize, ypos);
+                glVertex2f(xpos + cellSize, ypos + cellSize);
+                glVertex2f(xpos, ypos + cellSize);
+                glEnd();
+            }
+        }
+
+    }
+
+    glPopMatrix();
+
+}
 void mgonzalez3::darkBack(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 

@@ -845,7 +845,7 @@ void physics()
 			g.ship.vel[1] *= speed;
 		}
 	}*/
-static bool initialized = false;
+//static bool initialized = false;
     //----------------------------------------------
     //Movement Added by Sayed Jalal
     g.ship.vel[0] = 0.0f;
@@ -922,14 +922,15 @@ static bool initialized = false;
 	}
 }
 
-    static bool initialized = false;
+static bool initialized = false;
+
 void render()
 {
 	if (screenManager.getState() != GAME) {
         screenManager.render();
         return;
     }
-	
+    	
 	Rect r;
 	mgonzalez3 obj;
     //DrawStickman o;
@@ -944,11 +945,13 @@ void render()
     maze.generateWithExit(45, 33);
     initialized = true;
     } */
+
     if (!initialized) {
-    maze.generate(45,33);
+    maze.Level3(45,33);
     initialized = true;
     }
-    maze.render(gl.xres, gl.yres);
+
+    maze.renderLevel3(gl.xres, gl.yres);
     //void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
     //xres 840 yres 680 
     if (gl.fullscreen == 0) {

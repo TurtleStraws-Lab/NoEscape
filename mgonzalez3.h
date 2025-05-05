@@ -9,6 +9,7 @@ public:
     void generateWithExit(int width, int height);
     void Level3(int width, int height);
     void render(int xres, int yres);
+    void renderLevel3(int xres, int yres);
     bool isWall(float x, float y, float cellSize, float xres, float yres);
 private:
     void carveMaze(int x, int y);
