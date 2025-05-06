@@ -61,6 +61,8 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern void displayCredits();
 //-----------------------------------------------------------------------------
+extern bool buttonPressed[];
+
 
 class Global {
 public:
@@ -913,20 +915,36 @@ void render()
     maze.generateWithExit(45, 33);
     initialized = true;
     } */
+    
+        if (!initialized) {
+        maze.generate(45,33);
+        maze.generateWithExit(45, 33);
+        maze.Level3(45,33);
+        initialized = true;
+        }
 
-     if (!initialized) {
-    maze.Level3(45,33);
-    initialized = true;
-    }
+    if (buttonPressed[0] == true) {
+        buttonPressed[1] = false;
+        buttonPressed[2] = false;
+    maze.render(gl.xres, gl.yres); 
+    } 
+
+
+    if (buttonPressed[2] == true) {
+        buttonPressed[0] = false;
+        buttonPressed[1] = false;
     maze.renderLevel3(gl.xres, gl.yres); 
-
+    }
 
     //void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
     //xres 840 yres 680 
+    if (buttonPressed[1] == true) {
+        buttonPressed[0] = false;
+        buttonPressed[2] = false;
+    maze.render(gl.xres, gl.yres); 
     if (gl.fullscreen == 0) {
     //g.ship.pos[0] = gl.xres / 2;
     //g.ship.pos[1] = gl.yres / 2;
-    o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
            (gl.xres/2) - 305, (gl.xres/2) - 305, (gl.yres/2)-215, 
            (gl.yres/2)+215, (gl.yres/2) + 215, 
@@ -935,13 +953,14 @@ void render()
     if (gl.fullscreen == 1) {
     //g.ship.pos[0] = gl.xres / 2;
     //g.ship.pos[1] = gl.yres / 2;
-   o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     coin.coinCollect((gl.xres/2) + 305, (gl.xres /2) + 305, 
             (gl.xres/2) - 305, (gl.xres/2) - 305, 
             (gl.yres/2) - 215, (gl.yres/2)+215, (gl.yres/2) + 215, 
             (gl.yres/2) - 215, g.ship.pos[0], g.ship.pos[1]); 
     }
-
+    }
+    
+    o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
 	r.bot = gl.yres - 15;
