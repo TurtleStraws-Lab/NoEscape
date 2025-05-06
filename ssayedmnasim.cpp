@@ -111,9 +111,16 @@ void shutdownSound() {
     alDeleteBuffers(1, &buffer);
     alutExit();
 }
+/*
+void drawButton(float x1, float y1, float x2, float y2, const char* label, bool hovered = false) {
+    // Background color with subtle hover effect
+    if (hovered) {
+        glColor3f(0.3f, 0.7f, 1.0f); // lighter on hover
+    } else {
+        glColor3f(0.2f, 0.6f, 0.8f);
+    }
 
-void drawButton(float x1, float y1, float x2, float y2, const char* label) {
-    glColor3f(0.2f, 0.6f, 0.8f);
+    // Draw button with slight padding for soft-corner feel
     glBegin(GL_QUADS);
         glVertex2f(x1, y1);
         glVertex2f(x2, y1);
@@ -121,18 +128,67 @@ void drawButton(float x1, float y1, float x2, float y2, const char* label) {
         glVertex2f(x1, y2);
     glEnd();
 
+    // Border
+    glColor3f(0.0f, 0.3f, 0.5f);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+
+    // Text color and position
     glColor3f(1.0f, 1.0f, 1.0f);
-    glRasterPos2f(x1 + 10, (y1 + y2) / 2);
+    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)label);
+    float textX = x1 + ((x2 - x1) - textWidth) / 2;
+    float textY = (y1 + y2) / 2 - 4;
+    glRasterPos2f(textX, textY);
+    for (const char* c = label; *c != '\0'; ++c) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+}*/
+
+
+void drawButton(float x1, float y1, float x2, float y2, const char* label) {
+    glColor3f(0.2f, 0.6f, 0.8f); // Button color
+    glBegin(GL_QUADS);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+
+    // Border
+    glColor3f(0.0f, 0.3f, 0.5f);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+
+    // Centered label
+    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)label);
+    float textX = x1 + ((x2 - x1) - textWidth) / 2;
+    float textY = (y1 + y2) / 2 - 4;
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(textX, textY);
     for (const char* c = label; *c != '\0'; ++c) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
     }
 }
 
+
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    drawButton(100, 300, 300, 350, "Volume Up");
-    drawButton(100, 200, 300, 250, "Volume Down");
+    //drawButton(100, 300, 300, 350, "Volume Up");
+    //drawButton(100, 200, 300, 250, "Volume Down");
+    drawButton(100.0f, 300.0f, 300.0f, 350.0f, "Vol Up");
+    drawButton(100.0f, 200.0f, 300.0f, 250.0f, "Vol Down");
 
     glutSwapBuffers();
 }
@@ -159,12 +215,6 @@ void setup() {
 
 void sayed()
 {
-   // Rect r;
-   // r.left =10;
-   // r.center =0;
-
-   // ggprint8b(&r, 16, 0x00ff0000, "Sayed Jalal Sayed M Nasim");
-
     cout<<"the Game just started";
     initSound();
     startBackgroundSound();

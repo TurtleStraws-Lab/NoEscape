@@ -16,6 +16,7 @@
 //#include <X11/Xutil.h>
 //#include <GL/gl.h>
 //#include <GL/glu.h>
+#include <GL/glut.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include "log.h"
@@ -24,6 +25,7 @@
 #include "gregpala.h"
 #include "ssayedmnasim.h"
 #include "dvasquez4.h"
+
 
 //defined types
 typedef float Flt;
@@ -331,6 +333,9 @@ void render();
 //==========================================================================
 int main()
 {
+        int argc = 1;
+    char *argv[1] = {(char *)"Asteroids"};
+    glutInit(&argc, argv);  // REQUIRED for glutBitmapCharacter
    
     logOpen();
 	init_opengl();
@@ -429,6 +434,17 @@ void check_mouse(XEvent *e)
 	if (e->type == ButtonRelease) {
 		return;
 	}
+    if (screenManager.getState() == GAME && e->type == ButtonPress) {
+    int mx = e->xbutton.x;
+    int my = gl.yres - e->xbutton.y; // flip Y for OpenGL coordinates
+
+    if (mx >= 10 && mx <= 110 && my >= 60 && my <= 90) {
+        volumeUp();
+    }
+    if (mx >= 10 && mx <= 110 && my >= 10 && my <= 40) {
+        volumeDown();
+    }
+}
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
 			//Left button is down
@@ -900,6 +916,7 @@ void render()
         screenManager.render();
         return;
     }
+
     	
 	Rect r;
 	mgonzalez3 obj;
@@ -975,4 +992,7 @@ void render()
      //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
      //glClear(GL_COLOR_BUFFER_BIT);
    //o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
+   //
+    drawButton(10, 60, 110, 90, "Vol Up");
+    drawButton(10, 10, 110, 40, "Vol Down");
 }
