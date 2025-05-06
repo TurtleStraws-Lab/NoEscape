@@ -8,8 +8,14 @@
 #include <X11/Xlib.h>
 //might need more for images
 
-#define STEP 10
+#define WIN_WIDTH 840
+#define WIN_HEIGHT 680
+#define STEP 15
 #define DELAY 100000
+#define LEFT_X 210
+#define RIGHT_X 580
+#define TOP_Y 230
+#define BOTTOM_Y 500
 
 class Textbox {
     private:
