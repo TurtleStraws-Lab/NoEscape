@@ -63,6 +63,21 @@ private:
     struct timespec startTime;
     float loadingDuration; // seconds
     bool finished;
+    
+    // New members for visual enhancements
+    struct FloatingPixel {
+        float x, y;
+        float dx, dy;     // Direction vectors for movement
+        float speed;
+        float color[3];
+        float size;       // Property for variable pixel sizes
+    };
+    static const int NUM_PIXELS = 500;  // Increased from 100 to 500
+    FloatingPixel pixels[NUM_PIXELS];
+    
+    float titleY; // For dropping title animation
+    float titleTargetY; // Target Y position for title
+    float shipAngle; // For ship rotation animation
 
 public:
     LoadingScreen();
@@ -72,6 +87,7 @@ public:
     int handleMouse(int x, int y, int button);
     int handleKey(int key);
     bool isFinished() { return finished; }
+    void resize(int scrWidth, int scrHeight);
 };
 
 // Menu Screen class

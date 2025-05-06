@@ -7,6 +7,8 @@
 #include <ctime>
 #include <unistd.h>
 #include "gregpala.h"
+#include "dvasquez4.h"
+#include "mgonzalez3.h"
 
 bool buttonPressed[5] = {false};
 
@@ -23,8 +25,58 @@ LoadingScreen::LoadingScreen() {
     loadingDuration = 3.0f; // 3 second loading sequence
     finished = false;
     
+    // Initialize title position (start above screen)
+    titleY = -50.0f;
+    titleTargetY = 120.0f; // Target Y position (from top)
+    
+    shipAngle = 0.0f;
+    
+    // Get current screen dimensions
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Initialize random floating pixels to cover the entire current window size
+    for (int i = 0; i < NUM_PIXELS; i++) {
+        // Use full current screen dimensions - ensure even distribution
+        pixels[i].x = (float)(rand() % scrWidth);
+        pixels[i].y = (float)(rand() % scrHeight);
+        
+        // Random movement direction
+        float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI; // Random angle in radians
+        pixels[i].speed = 0.3f + ((float)rand() / RAND_MAX) * 1.5f; // Random speed
+        
+        // Calculate direction vector components
+        pixels[i].dx = cos(angle) * pixels[i].speed;
+        pixels[i].dy = sin(angle) * pixels[i].speed;
+        
+        // More varied colors with brighter options
+        pixels[i].color[0] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        pixels[i].color[1] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        pixels[i].color[2] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        
+        // Add size property to each pixel - slightly larger on average
+        pixels[i].size = 2.0f + (rand() % 8); // Random sizes between 2 and 9
+    }
+    
     // Start the timer
     clock_gettime(CLOCK_REALTIME, &startTime);
+}
+
+void LoadingScreen::resize(int scrWidth, int scrHeight) {
+    // Redistribute the floating pixels across the new screen dimensions
+    for (int i = 0; i < NUM_PIXELS; i++) {
+        // Keep the relative position of existing pixels
+        pixels[i].x = (pixels[i].x / screenManager.getScreenWidth()) * scrWidth;
+        pixels[i].y = (pixels[i].y / screenManager.getScreenHeight()) * scrHeight;
+        
+        // For pixels that are off-screen, reset them to be within the new dimensions
+        if (pixels[i].x < 0 || pixels[i].x > scrWidth) {
+            pixels[i].x = (float)(rand() % scrWidth);
+        }
+        if (pixels[i].y < 0 || pixels[i].y > scrHeight) {
+            pixels[i].y = (float)(rand() % scrHeight);
+        }
+    }
 }
 
 void LoadingScreen::update() {
@@ -32,6 +84,11 @@ void LoadingScreen::update() {
     rotation += 2.0f;
     if (rotation > 360.0f)
         rotation -= 360.0f;
+    
+    // Update ship angle
+    shipAngle += 1.0f;
+    if (shipAngle > 360.0f)
+        shipAngle -= 360.0f;
     
     // Calculate elapsed time
     struct timespec currentTime;
@@ -47,6 +104,67 @@ void LoadingScreen::update() {
     // Smooth progress bar
     progress += (targetProgress - progress) * 0.05f;
     
+    // Update title position with smooth animation
+    titleY += (titleTargetY - titleY) * 0.05f;
+    
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Update floating pixels - now with movement in all directions
+    for (int i = 0; i < NUM_PIXELS; i++) {
+        // Move based on direction vectors
+        pixels[i].x += pixels[i].dx;
+        pixels[i].y += pixels[i].dy;
+        
+        // Bounce off or wrap around edges
+        if (pixels[i].x < 0) {
+            // Option 1: Bounce off the edge
+            pixels[i].x = 0;
+            pixels[i].dx = -pixels[i].dx; // Reverse x direction
+            
+            // Add small random variation to avoid stuck patterns
+            pixels[i].dy += ((float)rand() / RAND_MAX - 0.5f) * 0.2f;
+        }
+        else if (pixels[i].x > scrWidth) {
+            // Option 1: Bounce off the edge
+            pixels[i].x = scrWidth;
+            pixels[i].dx = -pixels[i].dx; // Reverse x direction
+            
+            // Add small random variation to avoid stuck patterns
+            pixels[i].dy += ((float)rand() / RAND_MAX - 0.5f) * 0.2f;
+        }
+        
+        if (pixels[i].y < 0) {
+            // Option 1: Bounce off the edge
+            pixels[i].y = 0;
+            pixels[i].dy = -pixels[i].dy; // Reverse y direction
+            
+            // Add small random variation to avoid stuck patterns
+            pixels[i].dx += ((float)rand() / RAND_MAX - 0.5f) * 0.2f;
+        }
+        else if (pixels[i].y > scrHeight) {
+            // Option 1: Bounce off the edge
+            pixels[i].y = scrHeight;
+            pixels[i].dy = -pixels[i].dy; // Reverse y direction
+            
+            // Add small random variation to avoid stuck patterns
+            pixels[i].dx += ((float)rand() / RAND_MAX - 0.5f) * 0.2f;
+        }
+        
+        // Occasionally add a small random jitter to make movement more organic
+        if (rand() % 60 == 0) { // About once every 60 frames
+            pixels[i].dx += ((float)rand() / RAND_MAX - 0.5f) * 0.1f;
+            pixels[i].dy += ((float)rand() / RAND_MAX - 0.5f) * 0.1f;
+            
+            // Limit maximum speed to prevent pixels from moving too fast
+            float speed = sqrt(pixels[i].dx * pixels[i].dx + pixels[i].dy * pixels[i].dy);
+            if (speed > 2.0f) {
+                pixels[i].dx = (pixels[i].dx / speed) * 2.0f;
+                pixels[i].dy = (pixels[i].dy / speed) * 2.0f;
+            }
+        }
+    }
+    
     // Check if loading is complete
     if (elapsed >= loadingDuration && progress >= 99.0f) {
         finished = true;
@@ -60,15 +178,37 @@ void LoadingScreen::render() {
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
-    // Calculate scaling factor based on reference resolution (640x480)
+    // Calculate scaling factor based on reference resolution
     float scaleY = scrHeight / 480.0f;
     
-    // Draw title with scaling
+    // Draw floating pixels in background with variable sizes
+    // Use additive blending for a more glowing effect
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    
+    for (int i = 0; i < NUM_PIXELS; i++) {
+        glPointSize(pixels[i].size);
+        glBegin(GL_POINTS);
+        // Use a slightly transparent color for the glow effect
+        glColor4f(pixels[i].color[0], pixels[i].color[1], pixels[i].color[2], 0.7f);
+        glVertex2f(pixels[i].x, pixels[i].y);
+        glEnd();
+    }
+    
+    // Return to normal blending for the rest of the rendering
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    // Draw title with dropping animation and larger size
+    glPushMatrix();
+    glTranslatef(scrWidth/2, scrHeight - titleY * scaleY, 0);
+    glScalef(2.5f, 2.5f, 1.0f); // Make title 2.5x larger
+    
     Rect r;
-    r.bot = scrHeight - (120 * scaleY);
-    r.left = scrWidth/2;
+    r.bot = 0;
+    r.left = 0;
     r.center = 1;
     ggprint16(&r, 0, 0x00ffffff, "NO ESCAPE");
+    glPopMatrix();
     
     // Draw loading text with scaling
     r.bot = scrHeight/2 + (50 * scaleY);
@@ -107,6 +247,21 @@ void LoadingScreen::render() {
     glVertex2f(barLeft + fillWidth, barTop - barHeight);
     glVertex2f(barLeft, barTop - barHeight);
     glEnd();
+    
+    // Draw ship that moves along the loading bar
+    float shipX = barLeft + fillWidth - 10; // Position ship at current progress
+    float shipY = barTop - barHeight/2;
+    
+    DrawShip ship;
+    glPushMatrix();
+    ship.Ship(shipX, shipY, 0.0f, shipAngle);
+    glPopMatrix();
+    
+    // Draw coin at the end of the loading bar
+    if (progress < 100.0f) { // Only show coin if not finished loading
+        Coin coin;
+        coin.render(barLeft + barWidth + 10, barTop - barHeight/2, 5.0f);
+    }
 }
 
 int LoadingScreen::handleMouse(int x, int y, int button) {
@@ -664,7 +819,8 @@ void ScreenManager::setScreenDimensions(int width, int height) {
     screenWidth = width;
     screenHeight = height;
     
-    // Resize the menu and credits screens to match new dimensions
+    // Resize all screens to match new dimensions
+    loadingScreen->resize(width, height);
     menuScreen->resize(width, height);
     creditsScreen->resize(width, height);
     levelsScreen->resize(width, height);
