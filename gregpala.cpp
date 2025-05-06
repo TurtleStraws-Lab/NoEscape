@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include "gregpala.h"
 
+bool buttonPressed[5] = {false};
+
 // Initialize screen manager as a global object with default dimensions
 ScreenManager screenManager;
 
@@ -584,6 +586,7 @@ int LevelsScreen::handleMouse(int x, int y, int button) {
         for (size_t i = 0; i < levelButtons.size(); i++) {
             if (levelButtons[i].isClicked(x, y, scrHeight)) {
                 // Set the selected level and switch to game state
+                buttonPressed[i] = true;
                 screenManager.setSelectedLevel(static_cast<GameLevel>(i));
                 screenManager.setState(GAME);
                 return 1;
