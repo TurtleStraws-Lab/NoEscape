@@ -4,7 +4,11 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <cmath>
+#include <X11/keysym.h>
+#include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include "dvasquez4.h"
+
 
 drawCircle::drawCircle(float x2,float y2,float r,int num_seg) {
     glBegin(GL_LINE_LOOP);
@@ -28,23 +32,22 @@ calcAngle::calcAngle(float startx,float starty, float angle, float length)
     glVertex2f(endx,endy);
     glEnd();
 }
-void DrawShip::Ship(float a, float b, float c,float d) {
+void DrawShip::Ship(float a, float b, float c,float d){
     glPushMatrix();
     glTranslatef(a,b,c);
     glRotatef(d,0.0f,0.0f,1.0f);
     glColor3f(1.0,1.0f,1.0f);
-
-    calcAngle(0,5,75,11);
-    calcAngle(0,5,105,11);
-    calcAngle(0,10,115,6);
-    calcAngle(0,10,65,6);
+    calcAngle(0,0,75,11);
+    calcAngle(0,0,105,11);
+    calcAngle(0,5,115,6);
+    calcAngle(0,5,65,6);
     glEnd();
     glPopMatrix();
 
-}
-void DrawStickman::Stickman(float a, float b, float c ,float d) {
 
-    //glClear(GL_COLOR_BUFFER_BIT);
+}
+void DrawStickman::Stickman(float a, float b, float c,float d) {
+    
     glPushMatrix();
     glTranslatef(a,b,c);
     glRotatef(d,0.0f,0.0f,1.0f);
@@ -64,4 +67,20 @@ void DrawStickman::Stickman(float a, float b, float c ,float d) {
     glEnd();
     glPopMatrix(); 
 }
-
+void Movement(Display *display, XEvent &event) {
+    if (event.type == KeyPress) {
+        KeySym key = XkbKeycodeToKeysym(display,event.xkey.keycode,0,0);
+        if(key == XK_Left) {
+            updateShipAngle(270.0f);
+        }
+        if(key == XK_Right) {
+            updateShipAngle(90.0f);
+        }
+        if(key == XK_Up) {
+            updateShipAngle(180.0f);
+        }
+        if(key == XK_Down) {
+            updateShipAngle(0.0f);
+        }
+    }
+}

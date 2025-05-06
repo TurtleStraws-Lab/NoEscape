@@ -189,6 +189,7 @@ private:
 	Window win;
 	GLXContext glc;
 public:
+    Display *getDisplay() {return dpy;}
 	X11_wrapper() { }
 	X11_wrapper(int w, int h) {
 		GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -347,6 +348,9 @@ int main()
 			x11.check_resize(&e);
 			check_mouse(&e);
 			done = check_keys(&e);
+        if (screenManager.getState() == GAME) {
+            Movement(x11.getDisplay(),e);
+        }
 		}
 		clock_gettime(CLOCK_REALTIME, &timeCurrent);
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
@@ -370,7 +374,9 @@ int main()
     shutdownSound();
 	return 0;
 }
-
+extern "C" void updateShipAngle(float angle) {
+    g.ship.angle = angle;
+}
 void init_opengl(void)
 {
 	//OpenGL initialization
