@@ -659,7 +659,10 @@ void physics()
 	else if (g.ship.pos[1] < 0.0) {
 		g.ship.pos[1] += (float)gl.yres;
 	}
-	else if (g.ship.pos[1
+	else if (g.ship.pos[1] > (float)gl.yres) {
+        g.ship.pos[1] -= (float)gl.yres;
+    }
+
 	//Update bullet positions
 	struct timespec bt;
 	clock_gettime(CLOCK_REALTIME, &bt);
