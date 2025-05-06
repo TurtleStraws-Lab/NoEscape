@@ -993,7 +993,7 @@ void render()
      //glClear(GL_COLOR_BUFFER_BIT);
    //o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
    //
-    drawButton(10, 60, 110, 90, "Vol Up");
-    drawButton(10, 10, 110, 40, "Vol Down");
+    drawButton(10, 60, 90, 85, "Vol Up");
+    drawButton(10, 25, 90, 50, "Vol Down");
     drawVolumeBar(currentVolume);
 }

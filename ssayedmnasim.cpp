@@ -17,10 +17,10 @@ float currentVolume = 1.0f;
 
 void drawVolumeBar(float volume) {
     // Move the bar slightly to the right
-    float x1 = 200.0f;
-    float x2 = 400.0f;
-    float y1 = 60.0f;
-    float y2 = 80.0f;
+    float x1 = 110.0f;
+    float x2 = 210.0f;
+    float y1 = 25.0f;
+    float y2 = 45.0f;
 
     float barWidth = (x2 - x1) * volume;
 
@@ -54,27 +54,6 @@ void drawVolumeBar(float volume) {
 }
 
 // Loading background sound
-/*
-bool initSound() {
-    int argc =0;
-    char *argv[] = { NULL };
-    alutInit(&argc, argv);
-
-    buffer = alutCreateBufferFromFile("background_fixed.wav");
-    if (buffer == AL_NONE) {
-        cerr << "Error loading sound file.\n";
-        return false;
-    }
-
-    alGenSources(1, &source);
-    alSourcei(source, AL_BUFFER, buffer);
-    alSourcei(source, AL_LOOPING, AL_TRUE);
-    alSourcef(source, AL_GAIN, currentVolume);
-
-    return true;
-}*/
-
-
 bool initSound() {
     cout << "[DEBUG] Initializing ALUT..." << endl;
 
@@ -108,10 +87,6 @@ bool initSound() {
 
 
 // start the sound
-/*
-void startBackgroundSound() {
-    alSourcePlay(source);
-}*/
 void startBackgroundSound() {
     cout << "[DEBUG] Attempting to play background sound..." << endl;
     alSourcePlay(source);
@@ -149,44 +124,6 @@ void shutdownSound() {
     alDeleteBuffers(1, &buffer);
     alutExit();
 }
-/*
-void drawButton(float x1, float y1, float x2, float y2, const char* label, bool hovered = false) {
-    // Background color with subtle hover effect
-    if (hovered) {
-        glColor3f(0.3f, 0.7f, 1.0f); // lighter on hover
-    } else {
-        glColor3f(0.2f, 0.6f, 0.8f);
-    }
-
-    // Draw button with slight padding for soft-corner feel
-    glBegin(GL_QUADS);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
-    glEnd();
-
-    // Border
-    glColor3f(0.0f, 0.3f, 0.5f);
-    glLineWidth(2.0f);
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
-    glEnd();
-
-    // Text color and position
-    glColor3f(1.0f, 1.0f, 1.0f);
-    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)label);
-    float textX = x1 + ((x2 - x1) - textWidth) / 2;
-    float textY = (y1 + y2) / 2 - 4;
-    glRasterPos2f(textX, textY);
-    for (const char* c = label; *c != '\0'; ++c) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-    }
-}*/
-
 
 void drawButton(float x1, float y1, float x2, float y2, const char* label) {
     glColor3f(0.2f, 0.6f, 0.8f); // Button color
@@ -208,13 +145,13 @@ void drawButton(float x1, float y1, float x2, float y2, const char* label) {
     glEnd();
 
     // Centered label
-    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)label);
+    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_12, (const unsigned char*)label);
     float textX = x1 + ((x2 - x1) - textWidth) / 2;
     float textY = (y1 + y2) / 2 - 4;
     glColor3f(1.0f, 1.0f, 1.0f);
     glRasterPos2f(textX, textY);
     for (const char* c = label; *c != '\0'; ++c) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
     }
 }
 
@@ -222,12 +159,8 @@ void drawButton(float x1, float y1, float x2, float y2, const char* label) {
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
-
-    //drawButton(100, 300, 300, 350, "Volume Up");
-    //drawButton(100, 200, 300, 250, "Volume Down");
-    drawButton(100.0f, 300.0f, 300.0f, 350.0f, "Vol Up");
-    drawButton(100.0f, 200.0f, 300.0f, 250.0f, "Vol Down");
-
+    drawButton(100.0f, 200.0f, 200.0f, 250.0f, "Vol Up");
+    drawButton(210.0f, 200.0f, 310.0f, 250.0f, "Vol Down");
     glutSwapBuffers();
 }
 
@@ -262,28 +195,3 @@ void sayedend() {
      shutdownSound();
 }
 
-
-void changeDirection()
-{
-    // Reset velocity
-//    g.ship.vel[0] = 0.0f;
-//   g.ship.vel[1] = 0.0f;
-
-    // Apply directional movement
-//   if (gl.keys[XK_Up]) {
-//        g.ship.vel[1] = 4.0f;
-//       g.ship.angle = 0.0f;
-//    }
-//    if (gl.keys[XK_Down]) {
-//        g.ship.vel[1] = -4.0f;
-//        g.ship.angle = 180.0f;
-//    }
-//    if (gl.keys[XK_Left]) {
-//        g.ship.vel[0] = -4.0f;
-//        g.ship.angle = 270.0f;
-//    }
-//    if (gl.keys[XK_Right]) {
-//        g.ship.vel[0] = 4.0f;
-//        g.ship.angle = 90.0f;
-//    }
-}
