@@ -995,4 +995,5 @@ void render()
    //
     drawButton(10, 60, 110, 90, "Vol Up");
     drawButton(10, 10, 110, 40, "Vol Down");
+    drawVolumeBar(currentVolume);
 }

@@ -13,7 +13,45 @@ using namespace std;
 
 static ALuint buffer;
 static ALuint source;
-static float currentVolume = 1.0f; 
+float currentVolume = 1.0f;
+
+void drawVolumeBar(float volume) {
+    // Move the bar slightly to the right
+    float x1 = 200.0f;
+    float x2 = 400.0f;
+    float y1 = 60.0f;
+    float y2 = 80.0f;
+
+    float barWidth = (x2 - x1) * volume;
+
+    // Draw background bar (dark gray)
+    glColor3f(0.3f, 0.3f, 0.3f);
+    glBegin(GL_QUADS);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+
+    // Draw filled portion (green)
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glBegin(GL_QUADS);
+        glVertex2f(x1, y1);
+        glVertex2f(x1 + barWidth, y1);
+        glVertex2f(x1 + barWidth, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+
+    // Draw border (black)
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+    glEnd();
+}
 
 // Loading background sound
 /*
