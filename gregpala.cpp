@@ -643,6 +643,11 @@ ScreenManager::ScreenManager(int width, int height) {
     menuScreen = new MenuScreen();
     creditsScreen = new CreditsScreen();
     levelsScreen = new LevelsScreen(); // Initialize the levels screen
+    
+    // Initialize the level boolean flags
+    isLevel1Active = true;  // Since LEVEL_1 is default
+    isLevel2Active = false;
+    isLevel3Active = false;
 }
 
 ScreenManager::~ScreenManager() {
@@ -660,6 +665,16 @@ void ScreenManager::setScreenDimensions(int width, int height) {
     menuScreen->resize(width, height);
     creditsScreen->resize(width, height);
     levelsScreen->resize(width, height);
+}
+
+// Added implementation of setSelectedLevel to update boolean flags
+void ScreenManager::setSelectedLevel(GameLevel level) {
+    selectedLevel = level;
+    
+    // Update boolean values based on selected level
+    isLevel1Active = (level == LEVEL_1);
+    isLevel2Active = (level == LEVEL_2);
+    isLevel3Active = (level == LEVEL_3);
 }
 
 void ScreenManager::update() {

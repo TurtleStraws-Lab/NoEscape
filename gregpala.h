@@ -138,6 +138,11 @@ private:
     LevelsScreen* levelsScreen; // New screen
     int screenWidth;
     int screenHeight;
+    
+    // Added boolean variables for level selection
+    bool isLevel1Active;
+    bool isLevel2Active;
+    bool isLevel3Active;
 
 public:
     ScreenManager(int width = 640, int height = 480);
@@ -149,10 +154,15 @@ public:
     GameState getState() { return currentState; }
     void setState(GameState state) { currentState = state; }
     GameLevel getSelectedLevel() { return selectedLevel; }
-    void setSelectedLevel(GameLevel level) { selectedLevel = level; }
+    void setSelectedLevel(GameLevel level); // Changed to non-inline
     int getScreenWidth() { return screenWidth; }
     int getScreenHeight() { return screenHeight; }
     void setScreenDimensions(int width, int height);
+    
+    // Added accessor methods for level activation
+    bool isLevelOneActive() const { return isLevel1Active; }
+    bool isLevelTwoActive() const { return isLevel2Active; }
+    bool isLevelThreeActive() const { return isLevel3Active; }
 };
 
 extern ScreenManager screenManager;
