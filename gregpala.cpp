@@ -296,7 +296,7 @@ int MenuScreen::handleMouse(int x, int y, int button) {
         for (size_t i = 0; i < buttons.size(); i++) {
             if (buttons[i].isClicked(x, y, scrHeight)) {
                 if (i == 0) { // Play button
-                    screenManager.setState(GAME);
+                    screenManager.setState(LEVELS); // Changed to LEVELS instead of GAME
                     return 1;
                 } else if (i == 1) { // Credits button
                     screenManager.setState(CREDITS);
@@ -327,7 +327,7 @@ int MenuScreen::handleKey(int key) {
         return 1;
     } else if (key == 32 || key == 13) { // Space or Enter to select
         if (selectedButton == 0) { // Play button
-            screenManager.setState(GAME);
+            screenManager.setState(LEVELS); // Changed to LEVELS instead of GAME
             return 1;
         } else if (selectedButton == 1) { // Credits button
             screenManager.setState(CREDITS);
@@ -457,21 +457,199 @@ int CreditsScreen::handleKey(int key) {
     return 0;
 }
 
+// New Levels Screen Implementation
+
+LevelsScreen::LevelsScreen() 
+    : selectedButton(0),
+      titlePulse(1.0f),
+      titlePulseDir(-0.01f),
+      backButton((screenManager.getScreenWidth() - 100) / 2, 
+                 100 * (screenManager.getScreenHeight() / 480.0f), 
+                 100 * (screenManager.getScreenWidth() / 640.0f), 
+                 40 * (screenManager.getScreenHeight() / 480.0f), 
+                 "BACK") {
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Calculate scaling factors based on reference resolution
+    float scaleX = scrWidth / 640.0f;
+    float scaleY = scrHeight / 480.0f;
+    
+    int buttonWidth = 200 * scaleX;
+    int buttonHeight = 50 * scaleY;
+    int buttonX = (scrWidth - buttonWidth) / 2;
+    int buttonSpacing = 65 * scaleY;
+    
+    // Add level buttons
+    levelButtons.push_back(Button(buttonX, scrHeight/2 + buttonSpacing, buttonWidth, buttonHeight, "LEVEL 1"));
+    levelButtons.push_back(Button(buttonX, scrHeight/2, buttonWidth, buttonHeight, "LEVEL 2"));
+    levelButtons.push_back(Button(buttonX, scrHeight/2 - buttonSpacing, buttonWidth, buttonHeight, "LEVEL 3"));
+}
+
+void LevelsScreen::resize(int scrWidth, int scrHeight) {
+    // Recalculate button positions and sizes when window is resized
+    float scaleX = scrWidth / 640.0f;
+    float scaleY = scrHeight / 480.0f;
+    
+    int buttonWidth = 200 * scaleX;
+    int buttonHeight = 50 * scaleY;
+    int buttonX = (scrWidth - buttonWidth) / 2;
+    int buttonSpacing = 65 * scaleY;
+    
+    // Update level buttons
+    if (levelButtons.size() > 0) {
+        levelButtons[0].updatePosition(buttonX, scrHeight/2 + buttonSpacing, buttonWidth, buttonHeight);
+    }
+    
+    if (levelButtons.size() > 1) {
+        levelButtons[1].updatePosition(buttonX, scrHeight/2, buttonWidth, buttonHeight);
+    }
+    
+    if (levelButtons.size() > 2) {
+        levelButtons[2].updatePosition(buttonX, scrHeight/2 - buttonSpacing, buttonWidth, buttonHeight);
+    }
+    
+    // Update back button
+    int backButtonWidth = 100 * scaleX;
+    int backButtonHeight = 40 * scaleY;
+    int backButtonX = (scrWidth - backButtonWidth) / 2;
+    int backButtonY = 100 * scaleY;
+    
+    backButton.updatePosition(backButtonX, backButtonY, backButtonWidth, backButtonHeight);
+}
+
+void LevelsScreen::update() {
+    // Update title pulsing animation
+    titlePulse += titlePulseDir;
+    if (titlePulse <= 0.8f || titlePulse >= 1.2f) {
+        titlePulseDir = -titlePulseDir;
+    }
+    
+    // Reset all button hover states
+    for (auto &button : levelButtons) {
+        button.setHover(false);
+    }
+    
+    // Set hover for selected button
+    if (selectedButton >= 0 && selectedButton < (int)levelButtons.size()) {
+        levelButtons[selectedButton].setHover(true);
+    }
+}
+
+void LevelsScreen::render() {
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    int scrWidth = screenManager.getScreenWidth();
+    int scrHeight = screenManager.getScreenHeight();
+    
+    // Calculate scaling factors
+    float scaleY = scrHeight / 480.0f;
+    
+    // Draw title with pulsing effect
+    glPushMatrix();
+    glTranslatef(scrWidth/2, scrHeight - (120 * scaleY), 0);
+    glScalef(titlePulse, titlePulse, 1.0f);
+    
+    Rect r;
+    r.bot = 0;
+    r.left = 0;
+    r.center = 1;
+    ggprint16(&r, 0, 0x00ffffff, "SELECT LEVEL");
+    glPopMatrix();
+    
+    // Draw level buttons
+    for (auto &button : levelButtons) {
+        button.render();
+    }
+    
+    // Draw back button
+    backButton.render();
+    
+    // Draw instructions with scaling
+    r.bot = 30 * scaleY;
+    r.left = scrWidth/2;
+    r.center = 1;
+    ggprint8b(&r, 0, 0x00ffff00, "Use arrow keys to navigate");
+    
+    r.bot = 15 * scaleY;
+    ggprint8b(&r, 0, 0x0088ff88, "Press Enter to select a level");
+}
+
+int LevelsScreen::handleMouse(int x, int y, int button) {
+    int scrHeight = screenManager.getScreenHeight();
+    
+    if (button == 1) { // Left click
+        // Check level buttons
+        for (size_t i = 0; i < levelButtons.size(); i++) {
+            if (levelButtons[i].isClicked(x, y, scrHeight)) {
+                // Set the selected level and switch to game state
+                screenManager.setSelectedLevel(static_cast<GameLevel>(i));
+                screenManager.setState(GAME);
+                return 1;
+            }
+        }
+        
+        // Check back button
+        if (backButton.isClicked(x, y, scrHeight)) {
+            screenManager.setState(MENU);
+            return 1;
+        }
+    }
+    
+    // Update hover states for level buttons
+    for (size_t i = 0; i < levelButtons.size(); i++) {
+        if (levelButtons[i].isClicked(x, y, scrHeight)) {
+            selectedButton = i;
+            return 0;
+        }
+    }
+    
+    // Update hover state for back button
+    backButton.setHover(backButton.isClicked(x, y, scrHeight));
+    
+    return 0;
+}
+
+int LevelsScreen::handleKey(int key) {
+    // Up/Down to navigate buttons
+    if (key == 65362) { // Up arrow
+        selectedButton = (selectedButton - 1 + levelButtons.size()) % levelButtons.size();
+        return 1;
+    } else if (key == 65364) { // Down arrow
+        selectedButton = (selectedButton + 1) % levelButtons.size();
+        return 1;
+    } else if (key == 32 || key == 13) { // Space or Enter to select
+        // Set the selected level and switch to game state
+        screenManager.setSelectedLevel(static_cast<GameLevel>(selectedButton));
+        screenManager.setState(GAME);
+        return 1;
+    } else if (key == 27 || key == 8) { // Esc or Backspace to go back to menu
+        screenManager.setState(MENU);
+        return 1;
+    }
+    
+    return 0;
+}
+
 // Screen Manager Implementation
 
 ScreenManager::ScreenManager(int width, int height) {
     currentState = LOADING;
+    selectedLevel = LEVEL_1; // Default level
     screenWidth = width;
     screenHeight = height;
     loadingScreen = new LoadingScreen();
     menuScreen = new MenuScreen();
     creditsScreen = new CreditsScreen();
+    levelsScreen = new LevelsScreen(); // Initialize the levels screen
 }
 
 ScreenManager::~ScreenManager() {
     delete loadingScreen;
     delete menuScreen;
     delete creditsScreen;
+    delete levelsScreen; // Clean up the levels screen
 }
 
 void ScreenManager::setScreenDimensions(int width, int height) {
@@ -481,6 +659,7 @@ void ScreenManager::setScreenDimensions(int width, int height) {
     // Resize the menu and credits screens to match new dimensions
     menuScreen->resize(width, height);
     creditsScreen->resize(width, height);
+    levelsScreen->resize(width, height);
 }
 
 void ScreenManager::update() {
@@ -496,6 +675,9 @@ void ScreenManager::update() {
             break;
         case CREDITS:
             creditsScreen->update();
+            break;
+        case LEVELS:
+            levelsScreen->update();
             break;
         case GAME:
             // Game update is handled in the main game loop
@@ -514,6 +696,9 @@ void ScreenManager::render() {
         case CREDITS:
             creditsScreen->render();
             break;
+        case LEVELS:
+            levelsScreen->render();
+            break;
         case GAME:
             // Game rendering is handled in the main game rendering function
             break;
@@ -528,6 +713,8 @@ int ScreenManager::handleMouse(int x, int y, int button) {
             return menuScreen->handleMouse(x, y, button);
         case CREDITS:
             return creditsScreen->handleMouse(x, y, button);
+        case LEVELS:
+            return levelsScreen->handleMouse(x, y, button);
         case GAME:
             // Game mouse handling is done in main game loop
             return 0;
@@ -543,6 +730,8 @@ int ScreenManager::handleKey(int key) {
             return menuScreen->handleKey(key);
         case CREDITS:
             return creditsScreen->handleKey(key);
+        case LEVELS:
+            return levelsScreen->handleKey(key);
         case GAME:
             // Game key handling is done in main game loop
             // But we can handle ESC to return to menu

@@ -17,7 +17,15 @@ enum GameState {
     LOADING,
     MENU,
     CREDITS,
+    LEVELS,  // New state for levels menu
     GAME
+};
+
+// Enum for tracking selected level
+enum GameLevel {
+    LEVEL_1,
+    LEVEL_2,
+    LEVEL_3
 };
 
 // Base GameScreen class
@@ -100,16 +108,37 @@ public:
     void resize(int scrWidth, int scrHeight);
 };
 
+// New Levels Screen class
+class LevelsScreen : public GameScreen {
+private:
+    std::vector<Button> levelButtons;
+    Button backButton;
+    int selectedButton;
+    float titlePulse;
+    float titlePulseDir;
+
+public:
+    LevelsScreen();
+    ~LevelsScreen() {}
+    void update();
+    void render();
+    int handleMouse(int x, int y, int button);
+    int handleKey(int key);
+    void resize(int scrWidth, int scrHeight);
+};
+
 // Game Screen Manager
 class ScreenManager {
 private:
     GameState currentState;
+    GameLevel selectedLevel;
     LoadingScreen* loadingScreen;
     MenuScreen* menuScreen;
     CreditsScreen* creditsScreen;
+    LevelsScreen* levelsScreen; // New screen
     int screenWidth;
     int screenHeight;
-void resize(int scrWidth, int scrHeight);
+
 public:
     ScreenManager(int width = 640, int height = 480);
     ~ScreenManager();
@@ -119,6 +148,8 @@ public:
     int handleKey(int key);
     GameState getState() { return currentState; }
     void setState(GameState state) { currentState = state; }
+    GameLevel getSelectedLevel() { return selectedLevel; }
+    void setSelectedLevel(GameLevel level) { selectedLevel = level; }
     int getScreenWidth() { return screenWidth; }
     int getScreenHeight() { return screenHeight; }
     void setScreenDimensions(int width, int height);
@@ -126,4 +157,4 @@ public:
 
 extern ScreenManager screenManager;
 
-#endif // GREGPALA_Hvoid resize(int scrWidth, int scrHeight);void resize(int scrWidth, int scrHeight);
+#endif // GREGPALA_H
