@@ -265,7 +265,7 @@ void MenuScreen::render() {
     // Draw title with pulsing effect
     glPushMatrix();
     glTranslatef(scrWidth/2, scrHeight - (120 * scaleY), 0);
-    glScalef(titlePulse, titlePulse, 1.0f);
+    glScalef(titlePulse * 2.0f, titlePulse * 2.0f, 1.0f);
     
     Rect r;
     r.bot = 0;
@@ -391,7 +391,7 @@ void CreditsScreen::render() {
     
     // Draw scrolling credits with scaling
     float baseY = scrHeight - (120 * scaleY);
-    float lineSpacing = 30.0f * scaleY;
+    float lineSpacing = 20.0f * scaleY;
     
     r.bot = baseY;
     r.left = scrWidth/2;
@@ -402,31 +402,31 @@ void CreditsScreen::render() {
     ggprint8b(&r, 0, 0x00ffffff, "Programming");
     
     r.bot = baseY - lineSpacing * 2;
-    ggprint8b(&r, 0, 0x0088ff88, "Loading Screen/Menu");
+    ggprint8b(&r, 0, 0x0088ff88, "Geneva Regpala");
     
     r.bot = baseY - lineSpacing * 3;
-    ggprint8b(&r, 0, 0x00ffffff, "Geneva Regpala");
+    ggprint8b(&r, 0, 0x0088ff88, "Moises Gonzalez");
     
     r.bot = baseY - lineSpacing * 4;
-    ggprint8b(&r, 0, 0x0088ff88, "Maze Walls");
+    ggprint8b(&r, 0, 0x0088ff88, "Eve Turallo");
     
     r.bot = baseY - lineSpacing * 5;
-    ggprint8b(&r, 0, 0x00ffffff, "name");
+    ggprint8b(&r, 0, 0x0088ff88, "Sayed M Nasim");
     
     r.bot = baseY - lineSpacing * 6;
-    ggprint8b(&r, 0, 0x0088ff88, "Collision Detection");
+    ggprint8b(&r, 0, 0x0088ff88, "Devin Vasquez");
     
     r.bot = baseY - lineSpacing * 7;
-    ggprint8b(&r, 0, 0x00ffffff, "name");
+    ggprint8b(&r, 0, 0x00ffffff, "");
     
     r.bot = baseY - lineSpacing * 8;
-    ggprint8b(&r, 0, 0x0088ff88, "Movement");
+    ggprint8b(&r, 0, 0x0088ff88, "");
     
     r.bot = baseY - lineSpacing * 9;
-    ggprint8b(&r, 0, 0x00ffffff, "role");
+    ggprint8b(&r, 0, 0x00ffffff, "");
     
     r.bot = baseY - lineSpacing * 10;
-    ggprint8b(&r, 0, 0x0088ff88, "name");
+    ggprint8b(&r, 0, 0x0088ff88, "");
     
     // Draw back button
     backButton.render();
