@@ -10,7 +10,8 @@
 #include "ssayedmnasim.h" 
 
 using namespace std;
-
+static ALuint beepBuffer;
+static ALuint beepSource;
 static ALuint buffer;
 static ALuint source;
 float currentVolume = 1.0f;
@@ -99,6 +100,20 @@ bool initSound() {
         cerr << "[ERROR] Failed to generate audio source." << endl;
         return false;
     }
+        beepBuffer = alutCreateBufferFromFile("sounds/beep.wav");
+    if (beepBuffer == AL_NONE) {
+        cerr << "[ERROR] Failed to load beep.wav: " << alutGetErrorString(alutGetError()) << endl;
+        return false;
+    }
+
+    alGenSources(1, &beepSource);
+    if (alGetError() != AL_NO_ERROR) {
+        cerr << "[ERROR] Failed to generate beep source." << endl;
+        return false;
+    }
+
+    alSourcei(beepSource, AL_LOOPING, AL_FALSE); // Disable looping
+    alSourcef(beepSource, AL_GAIN, 1.0f); // Full volume for beep
 
     alSourcei(source, AL_BUFFER, buffer);
     alSourcei(source, AL_LOOPING, AL_TRUE);
@@ -106,6 +121,17 @@ bool initSound() {
 
     cout << "[DEBUG] Sound initialized successfully." << endl;
     return true;
+}
+
+void stopBeep(int value) {
+    (void)value;
+    alSourceStop(beepSource);
+}
+
+void playBeep() {
+    alSourcePlay(beepSource);
+    alSourcei(beepSource, AL_LOOPING, AL_FALSE); // Ensure it won't loop
+    glutTimerFunc(1000, stopBeep, 0); // Stop after 1000ms
 }
 
 
@@ -145,6 +171,9 @@ void volumeDown() {
 void shutdownSound() {
     alDeleteSources(1, &source);
     alDeleteBuffers(1, &buffer);
+    alDeleteSources(1, &beepSource);
+    alDeleteBuffers(1, &beepBuffer);
+
     alutExit();
 }
 
