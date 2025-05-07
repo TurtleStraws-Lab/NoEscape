@@ -982,8 +982,8 @@ if (!initialized) {
             (gl.yres/2) - 215, (gl.yres/2)+215, (gl.yres/2) + 215, 
             (gl.yres/2) - 215, g.ship.pos[0], g.ship.pos[1]); 
     }
-    }
-    
+    } 
+
     o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
     obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
     //glClear(GL_COLOR_BUFFER_BIT);

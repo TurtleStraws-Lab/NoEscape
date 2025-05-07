@@ -53,8 +53,6 @@ void Maze::Level3(int w, int h) {
     
 }    
 
-
-
 void Maze::generate(int w, int h) {
     width = w;
     height = h;
@@ -84,24 +82,17 @@ void Maze::generate(int w, int h) {
 
 }
 
-
-
-
 void Maze::carveMaze(int x, int y) {
-    static const int DX[4] = { 0, 0, -1, 1};
+    static const int DX[4] = { 0, 0, -1, 1}; //directions
     static const int DY[4] = { -1, 1, 0, 0};
-    std::vector<int> dirs = { 0, 1, 2, 3 };
-
+    std::vector<int> dirs = { 0, 1, 2, 3 }; 
     std::random_shuffle(dirs.begin(), dirs.end());
-
-    grid[y][x] = 1;
-
+    grid[y][x] = 1; //path
     for (int i : dirs) {
         int nx = x + DX[i] * 2;  
         //calculates coordinates of the cell two steps away... 
         //checking if unvisited and carves if so
         int ny = y + DY[i] * 2;   
-
         if (ny > 0 && ny < height - 1 && nx > 0 && nx < width - 1 && grid[ny][nx] == 0) {
             grid[y + DY[i]][x + DX[i]] = 1; // carve wall between
             carveMaze(nx, ny);
@@ -110,37 +101,28 @@ void Maze::carveMaze(int x, int y) {
 }
 
 bool Maze::isWall(float x, float y, float cellSize, float xres, float yres) {    
-
     float mazeWidth = width * cellSize;
     float mazeHeight = height * cellSize;
-
     float placeX = (xres - mazeWidth) / 2.0f;
     float placeY = (yres - mazeHeight) / 2.0f;
-
-    float relativeX = x - placeX;
-    float relativeY = y - placeY;
-    
-    if (relativeX < 0 || relativeX > mazeWidth || 
-        relativeY < 0 || relativeY > mazeHeight) {
+    float checkX = x - placeX;
+    float checkY = y - placeY;
+    if (checkX < 0 || checkX > mazeWidth || 
+        checkY < 0 || checkY > mazeHeight) {
         return true; 
     }
-    
-    int cellX = static_cast<int>(relativeX / cellSize);
-    int cellY = static_cast<int>((mazeHeight - relativeY) / cellSize);
-    
+    int cellX = static_cast<int>(checkX / cellSize);
+    int cellY = static_cast<int>((mazeHeight - checkY) / cellSize);
     if (cellX < 0 || cellX >= width || cellY < 0 || cellY >= height) {
         return true;
     }
-    
     return grid[cellY][cellX] == 0;
-
 }
 
 void Maze::renderLevel3(int xres, int yres) {
     static auto change = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - change);
-
     glPushMatrix();
     float mazeWidth = width * cellSize;
     float mazeHeight = height * cellSize;
@@ -149,7 +131,7 @@ void Maze::renderLevel3(int xres, int yres) {
     glTranslatef(placeX, placeY, 0.0f);
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-            if (grid[y][x] == 0) { // draw wall cell
+            if (grid[y][x] == 0) { 
                 glColor3f(0.0f, 0.0f, 1.0f);
             } else if (
                     (y == 5 && x == 22) ||
@@ -158,11 +140,9 @@ void Maze::renderLevel3(int xres, int yres) {
                 glColor3f(1.0f, 0.0f, 1.0f);
             } else {
                 continue;
-            }
+            } 
             float xpos = x * cellSize; 
-            //- (width * cellSize / 2);
             float ypos = (height - y - 1) * cellSize;
-            // - (height * cellSize / 2);
             glBegin(GL_LINE_LOOP);
             glVertex2f(xpos, ypos);
             glVertex2f(xpos + cellSize, ypos);
@@ -195,26 +175,19 @@ void Maze::renderLevel3(int xres, int yres) {
 }
 
 
-
-
-
 void Maze::render(int xres, int yres) {
     glPushMatrix();
     float mazeWidth = width * cellSize;
     float mazeHeight = height * cellSize;
     float placeX = (xres - mazeWidth) / 2.0f;
     float placeY = (yres - mazeHeight) / 2.0f;
-    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
     glTranslatef(placeX, placeY, 0.0f);
     glColor3f(0.0f, 0.0f, 1.0f); // White lines
-
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             if (grid[y][x] == 0) { // draw wall cell
                 float xpos = x * cellSize; 
-                //- (width * cellSize / 2);
                 float ypos = (height - y - 1) * cellSize;
-                // - (height * cellSize / 2);
                 glBegin(GL_LINE_LOOP);
                 glVertex2f(xpos, ypos);
                 glVertex2f(xpos + cellSize, ypos);
@@ -343,7 +316,4 @@ void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1,
     }
 
 }
-
-
-
 
