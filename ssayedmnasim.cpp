@@ -15,6 +15,29 @@ static ALuint buffer;
 static ALuint source;
 float currentVolume = 1.0f;
 
+
+void setVolumeBarColor(float volume) {
+    if (volume > 0.7f) {
+        float r = 0.0f;
+        float g = 1.0f;
+        float b = 0.0f;
+        glColor3f(r, g, b); // Green
+    }
+    else if (volume > 0.4f) {
+        float r = 1.0f;
+        float g = 1.0f;
+        float b = 0.0f;
+        glColor3f(r, g, b); // Yellow
+    }
+    else {
+        float r = 1.0f;
+        float g = 0.0f;
+        float b = 0.0f;
+        glColor3f(r, g, b); // Red
+    }
+}
+
+
 void drawVolumeBar(float volume) {
     // Move the bar slightly to the right
     float x1 = 110.0f;
@@ -34,7 +57,7 @@ void drawVolumeBar(float volume) {
     glEnd();
 
     // Draw filled portion (green)
-    glColor3f(0.0f, 1.0f, 0.0f);
+    setVolumeBarColor(volume);
     glBegin(GL_QUADS);
         glVertex2f(x1, y1);
         glVertex2f(x1 + barWidth, y1);
