@@ -10,13 +10,15 @@
 #include "ssayedmnasim.h" 
 
 using namespace std;
+
+// buffers to store the sound
 static ALuint beepBuffer;
 static ALuint beepSource;
 static ALuint buffer;
 static ALuint source;
 float currentVolume = 1.0f;
 
-
+// need to change the color of the bar
 void setVolumeBarColor(float volume) {
     if (volume > 0.7f) {
         float r = 0.0f;
@@ -39,6 +41,7 @@ void setVolumeBarColor(float volume) {
 }
 
 
+// the volume bar
 void drawVolumeBar(float volume) {
     // Move the bar slightly to the right
     float x1 = 110.0f;
@@ -51,29 +54,29 @@ void drawVolumeBar(float volume) {
     // Draw background bar (dark gray)
     glColor3f(0.3f, 0.3f, 0.3f);
     glBegin(GL_QUADS);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x1, y2);
     glEnd();
 
     // Draw filled portion (green)
     setVolumeBarColor(volume);
     glBegin(GL_QUADS);
-        glVertex2f(x1, y1);
-        glVertex2f(x1 + barWidth, y1);
-        glVertex2f(x1 + barWidth, y2);
-        glVertex2f(x1, y2);
+    glVertex2f(x1, y1);
+    glVertex2f(x1 + barWidth, y1);
+    glVertex2f(x1 + barWidth, y2);
+    glVertex2f(x1, y2);
     glEnd();
 
     // Draw border (black)
     glColor3f(0.0f, 0.0f, 0.0f);
     glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x1, y2);
     glEnd();
 }
 
@@ -81,67 +84,83 @@ void drawVolumeBar(float volume) {
 bool initSound() {
     cout << "[DEBUG] Initializing ALUT..." << endl;
 
+    // background sound
     int argc = 0;
     char *argv[] = { NULL };
     if (!alutInit(&argc, argv)) {
-        cerr << "[ERROR] alutInit failed: " << alutGetErrorString(alutGetError()) << endl;
+        cerr << "[ERROR] alutInit failed: "
+            << alutGetErrorString(alutGetError()) << endl;
         return false;
     }
 
-    cout << "[DEBUG] Loading sound file: background.wav" << endl;
-    buffer = alutCreateBufferFromFile("sounds/background.wav");
+    cout << "[DEBUG] Loading sound file: background.wav"
+        << endl;
+    buffer =
+        alutCreateBufferFromFile("sounds/background.wav");
     if (buffer == AL_NONE) {
-        cerr << "[ERROR] Failed to load sound file: " << alutGetErrorString(alutGetError()) << endl;
+        cerr << "[ERROR] Failed to load sound file: "
+            << alutGetErrorString(alutGetError()) << endl;
         return false;
     }
 
     alGenSources(1, &source);
     if (alGetError() != AL_NO_ERROR) {
-        cerr << "[ERROR] Failed to generate audio source." << endl;
+        cerr << "[ERROR] Failed to generate audio source."
+            << endl;
         return false;
     }
-        beepBuffer = alutCreateBufferFromFile("sounds/beep.wav");
+
+    // beep sound
+    beepBuffer =
+        alutCreateBufferFromFile("sounds/beep.wav");
     if (beepBuffer == AL_NONE) {
-        cerr << "[ERROR] Failed to load beep.wav: " << alutGetErrorString(alutGetError()) << endl;
+        cerr << "[ERROR] Failed to load beep.wav: "
+            << alutGetErrorString(alutGetError()) << endl;
         return false;
     }
 
     alGenSources(1, &beepSource);
     if (alGetError() != AL_NO_ERROR) {
-        cerr << "[ERROR] Failed to generate beep source." << endl;
+        cerr << "[ERROR] Failed to generate beep source."
+            << endl;
         return false;
     }
 
-    alSourcei(beepSource, AL_LOOPING, AL_FALSE); // Disable looping
-    alSourcef(beepSource, AL_GAIN, 1.0f); // Full volume for beep
+    alSourcei(beepSource, AL_LOOPING, AL_FALSE); 
+    alSourcef(beepSource, AL_GAIN, 1.0f); 
 
     alSourcei(source, AL_BUFFER, buffer);
     alSourcei(source, AL_LOOPING, AL_TRUE);
     alSourcef(source, AL_GAIN, currentVolume);
 
-    cout << "[DEBUG] Sound initialized successfully." << endl;
+    cout << "[DEBUG] Sound initialized successfully."
+        << endl;
     return true;
 }
 
+// beep should be temporary
 void stopBeep(int value) {
     (void)value;
     alSourceStop(beepSource);
 }
 
+// playing the beep
 void playBeep() {
     alSourcePlay(beepSource);
-    alSourcei(beepSource, AL_LOOPING, AL_FALSE); // Ensure it won't loop
-    glutTimerFunc(1000, stopBeep, 0); // Stop after 1000ms
+    alSourcei(beepSource, AL_LOOPING, AL_FALSE); 
+    glutTimerFunc(1000, stopBeep, 0); 
 }
 
 
 // start the sound
 void startBackgroundSound() {
-    cout << "[DEBUG] Attempting to play background sound..." << endl;
+    cout << "[DEBUG] Attempting to play background sound.."
+        << endl;
     alSourcePlay(source);
     ALenum error = alGetError();
     if (error != AL_NO_ERROR) {
-        cerr << "[ERROR] Failed to play sound: " << alutGetErrorString(error) << endl;
+        cerr << "[ERROR] Failed to play sound: "
+            << alutGetErrorString(error) << endl;
     } else {
         cout << "[DEBUG] Background sound playing." << endl;
     }
@@ -177,27 +196,31 @@ void shutdownSound() {
     alutExit();
 }
 
-void drawButton(float x1, float y1, float x2, float y2, const char* label) {
+// drawing the vol up and vol down
+void drawButton(float x1, float y1,
+        float x2, float y2, const char* label) {
     glColor3f(0.2f, 0.6f, 0.8f); // Button color
     glBegin(GL_QUADS);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x1, y2);
     glEnd();
 
     // Border
     glColor3f(0.0f, 0.3f, 0.5f);
     glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x2, y2);
-        glVertex2f(x1, y2);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x1, y2);
     glEnd();
 
     // Centered label
-    float textWidth = glutBitmapLength(GLUT_BITMAP_HELVETICA_12, (const unsigned char*)label);
+    float textWidth = glutBitmapLength(
+            GLUT_BITMAP_HELVETICA_12,
+            (const unsigned char*)label);
     float textX = x1 + ((x2 - x1) - textWidth) / 2;
     float textY = (y1 + y2) / 2 - 4;
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -207,9 +230,11 @@ void drawButton(float x1, float y1, float x2, float y2, const char* label) {
     }
 }
 
+
 bool isMuted = false;
 float previousVolume = 1.0f;
 
+// mute function toggle 
 void toggleMute() {
     if (!isMuted) {
         previousVolume = currentVolume;
@@ -250,6 +275,7 @@ void setup() {
     gluOrtho2D(0, 640, 0, 480);
 }
 
+// function that could lunch the sound
 void sayed()
 {
     cout<<"the Game just started";
@@ -257,6 +283,7 @@ void sayed()
     startBackgroundSound();
 }
 
+// function that end the sound
 void sayedend() {
      shutdownSound();
 }
