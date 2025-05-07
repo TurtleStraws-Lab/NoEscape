@@ -9,8 +9,8 @@ typedef Flt Matrix[4][4];
 #include <GL/gl.h>
 //class Game;
 extern "C" void updateShipAngle(float angle);
-class drawCircle
-{
+extern "C" void updateStickmanWalk(float angle);
+class drawCircle {
     private:
         float x,y,r;
         int num_seg;
@@ -18,8 +18,7 @@ class drawCircle
         drawCircle(float x, float y, float r, int num_seg);
 };
 
-class calcAngle
-{
+class calcAngle {
     private:
         float x, y, a, l;
     public:
@@ -40,5 +39,8 @@ class DrawStickman {
         void Stickman(float r, float b, float a,float d);
 
 };
+void resetStickman();
+void updateWalkingLegs();
 void Movement(Display *display,XEvent &event);
+void MovementWalking(Display *display,XEvent &event);
 #endif
