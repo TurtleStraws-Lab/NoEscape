@@ -6,6 +6,7 @@
 #include <iostream>
 #include <ctime>
 #include <unistd.h>
+#include <cmath>
 #include "gregpala.h"
 #include "dvasquez4.h"
 #include "mgonzalez3.h"
@@ -35,48 +36,100 @@ LoadingScreen::LoadingScreen() {
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
-    // Initialize random floating pixels to cover the entire current window size
-    for (int i = 0; i < NUM_PIXELS; i++) {
-        // Use full current screen dimensions - ensure even distribution
-        pixels[i].x = (float)(rand() % scrWidth);
-        pixels[i].y = (float)(rand() % scrHeight);
-        
-        // Random movement direction
-        float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI; // Random angle in radians
-        pixels[i].speed = 0.3f + ((float)rand() / RAND_MAX) * 1.5f; // Random speed
-        
-        // Calculate direction vector components
-        pixels[i].dx = cos(angle) * pixels[i].speed;
-        pixels[i].dy = sin(angle) * pixels[i].speed;
-        
-        // More varied colors with brighter options
-        pixels[i].color[0] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
-        pixels[i].color[1] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
-        pixels[i].color[2] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
-        
-        // Add size property to each pixel - slightly larger on average
-        pixels[i].size = 2.0f + (rand() % 8); // Random sizes between 2 and 9
-    }
+    // Calculate number of pixels based on screen area - less dense (1 per 3000 pixels)
+    numPixels = (scrWidth * scrHeight) / 3000;
+    
+    // Limit the range to avoid too few or too many particles
+    if (numPixels < 70) numPixels = 70;
+    if (numPixels > 200) numPixels = 200;
+    
+    // Initialize particles using a grid-based approach for better distribution
+    initializeParticles(scrWidth, scrHeight);
     
     // Start the timer
     clock_gettime(CLOCK_REALTIME, &startTime);
 }
 
-void LoadingScreen::resize(int scrWidth, int scrHeight) {
-    // Redistribute the floating pixels across the new screen dimensions
-    for (int i = 0; i < NUM_PIXELS; i++) {
-        // Keep the relative position of existing pixels
-        pixels[i].x = (pixels[i].x / screenManager.getScreenWidth()) * scrWidth;
-        pixels[i].y = (pixels[i].y / screenManager.getScreenHeight()) * scrHeight;
-        
-        // For pixels that are off-screen, reset them to be within the new dimensions
-        if (pixels[i].x < 0 || pixels[i].x > scrWidth) {
-            pixels[i].x = (float)(rand() % scrWidth);
-        }
-        if (pixels[i].y < 0 || pixels[i].y > scrHeight) {
-            pixels[i].y = (float)(rand() % scrHeight);
+// Helper method to initialize particles in a grid pattern
+void LoadingScreen::initializeParticles(int scrWidth, int scrHeight) {
+    // Divide the screen into grid cells
+    int gridCols = sqrt(numPixels) * 1.5;
+    int gridRows = sqrt(numPixels) * 1.5;
+    
+    float cellWidth = (float)scrWidth / gridCols;
+    float cellHeight = (float)scrHeight / gridRows;
+    
+    // Keep track of how many particles we've created
+    int currentPixel = 0;
+    
+    // Create particles distributed across the grid
+    for (int row = 0; row < gridRows && currentPixel < numPixels; row++) {
+        for (int col = 0; col < gridCols && currentPixel < numPixels; col++) {
+            // Skip some cells randomly to create a less uniform pattern
+            if (rand() % 3 == 0) continue;
+            
+            // Calculate base position at center of cell
+            float baseX = col * cellWidth + cellWidth/2;
+            float baseY = row * cellHeight + cellHeight/2;
+            
+            // Add some random offset within the cell
+            float offsetX = ((float)rand() / RAND_MAX - 0.5f) * cellWidth * 0.8f;
+            float offsetY = ((float)rand() / RAND_MAX - 0.5f) * cellHeight * 0.8f;
+            
+            // Final position with jitter
+            pixels[currentPixel].x = baseX + offsetX;
+            pixels[currentPixel].y = baseY + offsetY;
+            
+            // Random movement direction
+            float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+            pixels[currentPixel].speed = 0.3f + ((float)rand() / RAND_MAX) * 1.5f;
+            
+            // Calculate direction vector components
+            pixels[currentPixel].dx = cos(angle) * pixels[currentPixel].speed;
+            pixels[currentPixel].dy = sin(angle) * pixels[currentPixel].speed;
+            
+            // More varied colors with brighter options
+            pixels[currentPixel].color[0] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+            pixels[currentPixel].color[1] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+            pixels[currentPixel].color[2] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+            
+            // Add size property to each pixel - slightly larger on average
+            pixels[currentPixel].size = 1.5f + (rand() % 6); // Random sizes between 1.5 and 7.5
+            
+            currentPixel++;
         }
     }
+    
+    // If we didn't fill all particles with the grid approach, fill the remaining ones randomly
+    for (int i = currentPixel; i < numPixels; i++) {
+        pixels[i].x = (float)(rand() % scrWidth);
+        pixels[i].y = (float)(rand() % scrHeight);
+        
+        float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+        pixels[i].speed = 0.3f + ((float)rand() / RAND_MAX) * 1.5f;
+        
+        pixels[i].dx = cos(angle) * pixels[i].speed;
+        pixels[i].dy = sin(angle) * pixels[i].speed;
+        
+        pixels[i].color[0] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        pixels[i].color[1] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        pixels[i].color[2] = 0.3f + ((float)rand() / RAND_MAX) * 0.7f;
+        
+        pixels[i].size = 1.5f + (rand() % 6);
+    }
+}
+
+void LoadingScreen::resize(int scrWidth, int scrHeight) {
+    // Calculate the new number of pixels based on new screen area - less dense
+    int newNumPixels = (scrWidth * scrHeight) / 3000;
+    
+    // Limit the range
+    if (newNumPixels < 70) newNumPixels = 70;
+    if (newNumPixels > 200) newNumPixels = 200;
+    
+    // Reinitialize particles to ensure proper distribution
+    numPixels = newNumPixels;
+    initializeParticles(scrWidth, scrHeight);
 }
 
 void LoadingScreen::update() {
@@ -111,7 +164,7 @@ void LoadingScreen::update() {
     int scrHeight = screenManager.getScreenHeight();
     
     // Update floating pixels - now with movement in all directions
-    for (int i = 0; i < NUM_PIXELS; i++) {
+    for (int i = 0; i < numPixels; i++) {
         // Move based on direction vectors
         pixels[i].x += pixels[i].dx;
         pixels[i].y += pixels[i].dy;
@@ -186,7 +239,7 @@ void LoadingScreen::render() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
-    for (int i = 0; i < NUM_PIXELS; i++) {
+    for (int i = 0; i < numPixels; i++) {
         glPointSize(pixels[i].size);
         glBegin(GL_POINTS);
         // Use a slightly transparent color for the glow effect
@@ -912,6 +965,11 @@ int ScreenManager::handleKey(int key) {
             // But we can handle ESC to return to menu
             if (key == 27) { // ESC
                 currentState = MENU;
+                return 1;
+            }
+            // Add new key handler to return to levels screen
+            else if (key == 108 || key == 76) { // 'l' or 'L'
+                currentState = LEVELS;
                 return 1;
             }
             return 0;

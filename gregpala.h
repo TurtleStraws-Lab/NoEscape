@@ -72,12 +72,16 @@ private:
         float color[3];
         float size;       // Property for variable pixel sizes
     };
-    static const int NUM_PIXELS = 500;  // Increased from 100 to 500
-    FloatingPixel pixels[NUM_PIXELS];
+    static const int MAX_PIXELS = 500;  // Maximum possible particles
+    int numPixels;                      // Actual number used (calculated based on screen size)
+    FloatingPixel pixels[MAX_PIXELS];   // Array sized for maximum
     
     float titleY; // For dropping title animation
     float titleTargetY; // Target Y position for title
     float shipAngle; // For ship rotation animation
+    
+    // Helper method to initialize particles
+    void initializeParticles(int scrWidth, int scrHeight);
 
 public:
     LoadingScreen();
