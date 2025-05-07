@@ -44,8 +44,6 @@ void Maze::Level3(int w, int h) {
     }
     static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
     
-
-
     carveMaze(1, 1); // Start carving from cell (1,1)
 
     grid[0][1] = 1;
@@ -64,20 +62,13 @@ void Maze::generate(int w, int h) {
             grid[i][j] = 0; //initalize all cells as walls
     }
     static std::mt19937 g(45); 
-    grid[0][1] = 1;
-    grid[15][23] = 1;   
-    grid[15][24] = 1;   
-    grid[15][22] = 1;   
-    grid[16][23] = 1;   
-    grid[16][22] = 1;   
-    grid[15][22] = 1;   
-    grid[15][21] = 1;   
-    grid[17][22] = 1;   
     /* for (int a = 15; a <= 30; a+=1) {
        for (int k = 0; k < height; ++k) {
        grid[k][a] = 1;
        } } */  
         
+    grid[0][1] = 1;
+    grid[32][43] = 1;   
     carveMaze(1, 1); // Start carving from cell (1,1)
 
 }
@@ -133,9 +124,14 @@ void Maze::renderLevel3(int xres, int yres) {
         for (int x = 0; x < width; ++x) {
             if (grid[y][x] == 0) { 
                 glColor3f(0.0f, 0.0f, 1.0f);
-            } else if (
-                    (y == 5 && x == 22) ||
-                    (y == 10 && x == 27)   ||
+            } else if (  
+                    (y == 5 && x == 5)   ||
+                    (y == 14 && x == 21) ||
+                    (y == 18 && x == 15) ||
+                    (y == 22 && x == 5)  ||
+                    (y == 5 && x == 22)  ||
+                    (y == 10 && x == 27) ||
+                    (y == 18 && x == 8)  ||
                     (y == 7 && x == 14) ) {
                 glColor3f(1.0f, 0.0f, 1.0f);
             } else {
@@ -167,6 +163,27 @@ void Maze::renderLevel3(int xres, int yres) {
         } else {
             grid[7][14] = 0;
         }
+        if (grid[5][5] == 0) {
+            grid[5][5] = 1;
+        } else {
+            grid[5][5] = 0;
+        }
+        if (grid[14][21] == 0) {
+            grid[14][21] = 1;
+        } else {
+            grid[14][21] = 0;
+        }
+        if (grid[22][5] == 0) {
+            grid[22][5] = 1;
+        } else {
+            grid[22][5] = 0;
+        }
+        if (grid[18][8] == 0) {
+            grid[18][8] = 1;
+        } else {
+            grid[18][8] = 0;
+        }
+
         change = now;
     }
 
