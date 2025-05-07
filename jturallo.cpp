@@ -194,8 +194,13 @@ Image::Image(const char *fname) {
 }
 
 void draw_walls(Display *d, Window w, GC gc) {
-    XDrawLine(d, w, gc, 180, 180, 180, 500);   // left shaft left wall
-    XDrawLine(d, w, gc, 240, 180, 240, 500);   // left shaft right wall
+    XDrawLine(d, w, gc, 180, 180, 180, 500);   // left shaft left wall (bottom part)
+    XDrawLine(d, w, gc, 180, 200, 180, 500);   // left shaft left wall (top part)
+    XDrawLine(d, w, gc, 240, 260, 240, 500);   // left shaft right wall 
+                                               // bottom part, ending at horizontal shaft
+    XDrawLine(d, w, gc, 240, 180, 240, 200);   // left shaft right wall 
+                                               // upper part stating at horizontal shaft
+                                               // moved down to appear after reaching 
     XDrawLine(d, w, gc, 240, 200, 620, 200);   // horizontal top wall (from right side of left shaft)
     XDrawLine(d, w, gc, 240, 260, 540, 260);   // horizontal bottom wall
     XDrawLine(d, w, gc, 540, 260, 540, 500);   // right shaft left wall
@@ -246,6 +251,7 @@ void animate_walk_back(Display *d, Window w, GC gc, int x, int y) {
         usleep(DELAY);
     }
 
+
     while (x > LEFT_X) {
         x -= STEP;
         XClearWindow(d, w);
@@ -294,6 +300,9 @@ void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y
         usleep(DELAY);
     }
 
+    XDrawLine(d, w, gc, 180, 200, 180, 500);   // left shaft left wall (top part)
+    XDrawLine(d, w, gc, 240, 180, 240, 200);   // left shaft right wall
+                                               // upper part 
     // === RIGHT WALK ===
     for (int step = 0; step < right_steps; step++) {
         x += STEP;
@@ -353,9 +362,21 @@ void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y
         XFlush(d);
         usleep(DELAY);
     }
+    XDrawLine(d, w, gc, 240, 200, 620, 200);   // horizontal top wall (from right side of left shaft)
 
     XFreePixmap(d, buffer);
     *out_x = x;
     *out_y = y;
+}
+
+//wrapper function
+void play_cutscene(Display *d, Window w, GC gc) {
+    int x, y;
+    animate_walk_with_walls(d, w, gc, &x, &y);
+    XClearWindow(d, w);
+    draw_walls(d, w, gc);
+    draw_stickman(d, w, gc, x, y);
+    stickman_turn_around(d, w, gc, x, y);
+    animate_walk_back(d, w, gc, x, y);
 }
 

@@ -52,6 +52,7 @@ void draw_stickman_flipped(Display *d, Window w, GC gc, int x, int y);
 void stickman_turn_around(Display *d, Window w, GC gc, int x, int y);
 void animate_walk_back(Display *d, Window w, GC gc, int x, int y);
 void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y);
+void play_cutscene(Display *d, Window w, GC gc);
 
 extern Textbox* title;
 extern Textbox* names;

@@ -25,7 +25,7 @@
 #include "gregpala.h"
 #include "ssayedmnasim.h"
 #include "dvasquez4.h"
-
+#include "jturallo.h"
 
 //defined types
 typedef float Flt;
@@ -194,6 +194,7 @@ private:
 	GLXContext glc;
 public:
     Display *getDisplay() {return dpy;}
+    Window getWindow() const { return win; }
 	X11_wrapper() { }
 	X11_wrapper(int w, int h) {
 		GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
@@ -342,6 +343,10 @@ int main()
     // added by sayed
     initSound();
     startBackgroundSound();
+
+    GC gc = XCreateGC(x11.getDisplay(), x11.getWindow(), 0, NULL);
+    XSetForeground(x11.getDisplay(), gc, WhitePixel(x11.getDisplay(), 0));
+    play_cutscene(x11.getDisplay(), x11.getWindow(), gc);
 
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
