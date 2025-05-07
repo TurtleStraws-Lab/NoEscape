@@ -128,34 +128,7 @@ Image::~Image() {
     delete[] data;
 }
 
-void draw_walls(Display *d, Window w, GC gc) {
-    XDrawLine(d, w, gc, 180, 200, 180, 500);
-    XDrawLine(d, w, gc, 240, 260, 240, 500);
-    XDrawLine(d, w, gc, 180, 200, 620, 200);
-    XDrawLine(d, w, gc, 240, 260, 540, 260);
-    XDrawLine(d, w, gc, 540, 260, 540, 500);
-    XDrawLine(d, w, gc, 620, 200, 620, 500);
-    XDrawLine(d, w, gc, 540, 500, 620, 500);
-}
-
-void draw_stickman(Display *d, Window w, GC gc, int x, int y) {
-    XDrawLine(d, w, gc, x, y, x, y - 15);
-    XDrawLine(d, w, gc, x, y - 15, x - 5, y - 22);
-    XDrawLine(d, w, gc, x, y - 15, x + 5, y - 22);
-    XDrawLine(d, w, gc, x, y, x - 5, y + 10);
-    XDrawLine(d, w, gc, x, y, x + 5, y + 10);
-    XDrawArc(d, w, gc, x - 5, y - 30, 10, 10, 0, 360 * 64);
-}
-
-void draw_stickman_flipped(Display *d, Window w, GC gc, int x, int y) {
-    XDrawLine(d, w, gc, x, y, x, y - 15);
-    XDrawLine(d, w, gc, x, y - 15, x + 5, y - 22);
-    XDrawLine(d, w, gc, x, y - 15, x - 5, y - 22);
-    XDrawLine(d, w, gc, x, y, x + 5, y + 10);
-    XDrawLine(d, w, gc, x, y, x - 5, y + 10);
-    XDrawArc(d, w, gc, x - 5, y - 30, 10, 10, 0, 360 * 64);
-}
-
+/*
 void draw_red_x_stroke_by_stroke(Display *d, Window w, GC gc, int x, int y) {
     XColor red;
     Colormap colormap = DefaultColormap(d, 0);
@@ -168,78 +141,7 @@ void draw_red_x_stroke_by_stroke(Display *d, Window w, GC gc, int x, int y) {
     XFlush(d);
     XSetForeground(d, gc, WhitePixel(d, 0));
 }
-
-void stickman_turn_around(Display *d, Window w, GC gc, int x, int y) {
-    usleep(300000);
-    XClearWindow(d, w);
-    draw_walls(d, w, gc);
-    XColor red;
-    Colormap colormap = DefaultColormap(d, 0);
-    XAllocNamedColor(d, colormap, "red", &red, &red);
-    XSetForeground(d, gc, red.pixel);
-    XDrawLine(d, w, gc, x - 10, y - 10, x + 10, y + 10);
-    XDrawLine(d, w, gc, x - 10, y + 10, x + 10, y - 10);
-    XSetForeground(d, gc, WhitePixel(d, 0));
-    draw_stickman_flipped(d, w, gc, x, y);
-    XFlush(d);
-}
-
-void animate_walk_back(Display *d, Window w, GC gc, int x, int y) {
-    while (y > TOP_Y) {
-        y -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-    while (x > LEFT_X) {
-        x -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-    while (y < BOTTOM_Y) {
-        y += STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-}
-
-void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y) {
-    int x = LEFT_X, y = BOTTOM_Y;
-    while (y > TOP_Y) {
-        y -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-    while (x < RIGHT_X) {
-        x += STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-    while (y + STEP < BOTTOM_Y) {
-        y += STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman(d, w, gc, x, y);
-        XFlush(d);
-        usleep(DELAY);
-    }
-    *out_x = x;
-    *out_y = y;
-}
+*/
 
 
 //Taken from background.cpp
@@ -289,5 +191,171 @@ Image::Image(const char *fname) {
 
 
     unlink(ppmname);
+}
+
+void draw_walls(Display *d, Window w, GC gc) {
+    XDrawLine(d, w, gc, 180, 180, 180, 500);   // left shaft left wall
+    XDrawLine(d, w, gc, 240, 180, 240, 500);   // left shaft right wall
+    XDrawLine(d, w, gc, 240, 200, 620, 200);   // horizontal top wall (from right side of left shaft)
+    XDrawLine(d, w, gc, 240, 260, 540, 260);   // horizontal bottom wall
+    XDrawLine(d, w, gc, 540, 260, 540, 500);   // right shaft left wall
+    XDrawLine(d, w, gc, 620, 200, 620, 500);   // right shaft right wall
+    XDrawLine(d, w, gc, 540, 500, 620, 500);   // dead-end bottom wall
+}
+
+void draw_stickman(Display *d, Window w, GC gc, int x, int y) {
+    XDrawLine(d, w, gc, x, y, x, y - 15);
+    XDrawLine(d, w, gc, x, y - 15, x - 5, y - 22);
+    XDrawLine(d, w, gc, x, y - 15, x + 5, y - 22);
+    XDrawLine(d, w, gc, x, y, x - 5, y + 10);
+    XDrawLine(d, w, gc, x, y, x + 5, y + 10);
+    XDrawArc(d, w, gc, x - 5, y - 30, 10, 10, 0, 360 * 64);
+}
+
+void draw_stickman_flipped(Display *d, Window w, GC gc, int x, int y) {
+    XDrawLine(d, w, gc, x, y, x, y - 15);
+    XDrawLine(d, w, gc, x, y - 15, x + 5, y - 22);
+    XDrawLine(d, w, gc, x, y - 15, x - 5, y - 22);
+    XDrawLine(d, w, gc, x, y, x + 5, y + 10);
+    XDrawLine(d, w, gc, x, y, x - 5, y + 10);
+    XDrawArc(d, w, gc, x - 5, y - 30, 10, 10, 0, 360 * 64);
+}
+
+void stickman_turn_around(Display *d, Window w, GC gc, int x, int y) {
+    usleep(300000);
+    XClearWindow(d, w);
+    draw_walls(d, w, gc);
+    XColor red;
+    Colormap colormap = DefaultColormap(d, 0);
+    XAllocNamedColor(d, colormap, "red", &red, &red);
+    XSetForeground(d, gc, red.pixel);
+    XDrawLine(d, w, gc, x - 10, y - 10, x + 10, y + 10);
+    XDrawLine(d, w, gc, x - 10, y + 10, x + 10, y - 10);
+    XSetForeground(d, gc, WhitePixel(d, 0));
+    draw_stickman_flipped(d, w, gc, x, y);
+    XFlush(d);
+}
+
+void animate_walk_back(Display *d, Window w, GC gc, int x, int y) {
+    while (y > TOP_Y) {
+        y -= STEP;
+        XClearWindow(d, w);
+        draw_walls(d, w, gc);
+        draw_stickman_flipped(d, w, gc, x, y);
+        XFlush(d);
+        usleep(DELAY);
+    }
+
+    while (x > LEFT_X) {
+        x -= STEP;
+        XClearWindow(d, w);
+        draw_walls(d, w, gc);
+        draw_stickman_flipped(d, w, gc, x, y);
+        XFlush(d);
+        usleep(DELAY);
+    }
+
+    while (y > 180) {  // Upward into extended left shaft
+        y -= STEP;
+        XClearWindow(d, w);
+        draw_walls(d, w, gc);
+        draw_stickman_flipped(d, w, gc, x, y);
+        XFlush(d);
+        usleep(DELAY);
+    }
+}
+
+void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y) {
+    int x = LEFT_X;
+    int y = BOTTOM_Y;
+
+    int up_steps = (BOTTOM_Y - TOP_Y) / STEP;
+    int right_steps = (RIGHT_X - LEFT_X) / STEP;
+    int down_steps = (BOTTOM_Y - TOP_Y) / STEP;
+
+    Pixmap buffer = XCreatePixmap(d, w, WIN_WIDTH, WIN_HEIGHT, DefaultDepth(d, 0));
+
+    // === UPWARD WALK ===
+    for (int step = 0; step < up_steps; step++) {
+        y -= STEP;
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        int wall_bottom_limit = 200;
+        int wall_top = (y < wall_bottom_limit) ? wall_bottom_limit : y;
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        XDrawLine(d, buffer, gc, 180, BOTTOM_Y, 180, wall_top);
+        int right_wall_top = (y > 260) ? y : 260;
+        XDrawLine(d, buffer, gc, 240, BOTTOM_Y, 240, right_wall_top);
+
+        draw_stickman(d, buffer, gc, x, y);
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
+        XFlush(d);
+        usleep(DELAY);
+    }
+
+    // === RIGHT WALK ===
+    for (int step = 0; step < right_steps; step++) {
+        x += STEP;
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        XDrawLine(d, buffer, gc, 180, BOTTOM_Y, 180, 200);
+        XDrawLine(d, buffer, gc, 240, BOTTOM_Y, 240, 260);
+
+        XDrawLine(d, buffer, gc, 240, 200, x, 200);
+        if (x >= 240) {
+            int wall_end_x = (x < 540) ? x : 540;
+            XDrawLine(d, buffer, gc, 240, 260, wall_end_x, 260);
+        }
+
+        draw_stickman(d, buffer, gc, x, y);
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
+        XFlush(d);
+        usleep(DELAY);
+    }
+
+    // === DOWNWARD WALK ===
+    for (int step = 0; step < down_steps - 1; step++) {
+        y += STEP;
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        XDrawLine(d, buffer, gc, 180, BOTTOM_Y, 180, 200);
+        XDrawLine(d, buffer, gc, 240, BOTTOM_Y, 240, 260);
+        XDrawLine(d, buffer, gc, 240, 200, 620, 200);
+        XDrawLine(d, buffer, gc, 240, 260, 540, 260);
+
+        if (y > 260) {
+            int shaft_bottom = (y < BOTTOM_Y) ? y : BOTTOM_Y;
+            XDrawLine(d, buffer, gc, 540, 260, 540, shaft_bottom);
+            XDrawLine(d, buffer, gc, 620, 200, 620, shaft_bottom);
+        }
+
+        if (step >= down_steps - 4) {
+            int coin_y = BOTTOM_Y - STEP;
+            XSetForeground(d, gc, WhitePixel(d, 0));
+            XDrawArc(d, buffer, gc, RIGHT_X - 5, coin_y - 5, 10, 10, 0, 360 * 64);
+
+            XColor gold;
+            Colormap colormap = DefaultColormap(d, 0);
+            XAllocNamedColor(d, colormap, "gold", &gold, &gold);
+            XSetForeground(d, gc, gold.pixel);
+            XFillArc(d, buffer, gc, RIGHT_X - 5, coin_y - 5, 10, 10, 0, 360 * 64);
+
+            XSetForeground(d, gc, WhitePixel(d, 0));
+        }
+
+        draw_stickman(d, buffer, gc, x, y);
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
+        XFlush(d);
+        usleep(DELAY);
+    }
+
+    XFreePixmap(d, buffer);
+    *out_x = x;
+    *out_y = y;
 }
 
