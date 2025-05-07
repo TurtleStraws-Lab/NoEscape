@@ -28,14 +28,8 @@ void Maze::generateWithExit(int w, int h) {
     static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
     carveMaze(1, 1); // Start carving from cell (1,1)
 
-    grid[0][22] = 1;
-
-    for (int x = width - 2; x > 0; --x) {
-        if (grid[height - 2][x] == 1) { // Find path on bottom row
-            grid[height - 1][x] = 1;    // Carve an exit
-            break;
-        }
-    }    
+    grid[0][1] = 1;
+    grid[32][43] = 1;   
 }
 
 void Maze::Level3(int w, int h) {
@@ -50,14 +44,14 @@ void Maze::Level3(int w, int h) {
             grid[i][j] = 0; //initalize all cells as walls
     }
     static std::mt19937 g(static_cast<unsigned int>(std::time(nullptr)));
+    
+
+
     carveMaze(1, 1); // Start carving from cell (1,1)
 
-    for (int x = width - 2; x > 0; --x) {
-        if (grid[height - 2][x] == 1) { // Find path on bottom row
-            grid[height - 1][x] = 1;    // Carve an exit
-            break;
-        }
-    }
+    grid[0][1] = 1;
+    grid[32][43] = 1;   
+    
 }    
 
 
@@ -73,19 +67,14 @@ void Maze::generate(int w, int h) {
             grid[i][j] = 0; //initalize all cells as walls
     }
     static std::mt19937 g(45); 
-     for (int a = 15; a <= 30; a+=1) {
+    grid[0][1] = 1;
+    grid[32][43] = 1;   
+    /* for (int a = 15; a <= 30; a+=1) {
        for (int k = 0; k < height; ++k) {
        grid[k][a] = 1;
-       } 
-       } 
-   /* grid[15][22] = 1;
-    grid[16][22] = 1;
-    grid[17][22] = 1;
-   grid[18][22] = 1;
-    grid[18][22] = 1;
-    grid[20][22] = 1;
-    grid[21][22] = 1; */ 
-    //carveMaze(1, 1); // Start carving from cell (1,1)
+       }  */
+        
+    carveMaze(1, 1); // Start carving from cell (1,1)
 
 }
 
@@ -140,6 +129,37 @@ void Maze::renderLevel3(int xres, int yres) {
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - change);
 
+    glPushMatrix();
+    float mazeWidth = width * cellSize;
+    float mazeHeight = height * cellSize;
+    float placeX = (xres - mazeWidth) / 2.0f;
+    float placeY = (yres - mazeHeight) / 2.0f;
+    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
+    glTranslatef(placeX, placeY, 0.0f);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (grid[y][x] == 0) { // draw wall cell
+                glColor3f(0.0f, 0.0f, 1.0f);
+            } else if (
+                    (y == 5 && x == 22) ||
+                    (y == 10 && x == 27)   ||
+                    (y == 7 && x == 14) ) {
+                glColor3f(1.0f, 0.0f, 1.0f);
+            } else {
+                continue;
+            }
+            float xpos = x * cellSize; 
+            //- (width * cellSize / 2);
+            float ypos = (height - y - 1) * cellSize;
+            // - (height * cellSize / 2);
+            glBegin(GL_LINE_LOOP);
+            glVertex2f(xpos, ypos);
+            glVertex2f(xpos + cellSize, ypos);
+            glVertex2f(xpos + cellSize, ypos + cellSize);
+            glVertex2f(xpos, ypos + cellSize);
+            glEnd();
+        }
+    }
     if (elapsed.count() >= 2) {
         if (grid[5][22] == 0) {
             grid[5][22] = 1;
@@ -151,7 +171,6 @@ void Maze::renderLevel3(int xres, int yres) {
         } else {
             grid[10][27] = 0;
         }
-        change = now;
         if (grid[7][14] == 0) {
             grid[7][14] = 1;
         } else {
@@ -160,36 +179,13 @@ void Maze::renderLevel3(int xres, int yres) {
         change = now;
     }
 
-    glPushMatrix();
-    float mazeWidth = width * cellSize;
-    float mazeHeight = height * cellSize;
-    float placeX = (xres - mazeWidth) / 2.0f;
-    float placeY = (yres - mazeHeight) / 2.0f;
-    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
-    glTranslatef(placeX, placeY, 0.0f);
-    glColor3f(0.0f, 0.0f, 1.0f); // White lines
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            if (grid[y][x] == 0) { // draw wall cell
-                float xpos = x * cellSize; 
-                //- (width * cellSize / 2);
-                float ypos = (height - y - 1) * cellSize;
-                // - (height * cellSize / 2);
-                glBegin(GL_LINE_LOOP);
-                glVertex2f(xpos, ypos);
-                glVertex2f(xpos + cellSize, ypos);
-                glVertex2f(xpos + cellSize, ypos + cellSize);
-                glVertex2f(xpos, ypos + cellSize);
-                glEnd();
-            }
-        }
-
-    }
 
     glPopMatrix();
-
 }
+
+
+
+
 
 void Maze::render(int xres, int yres) {
     glPushMatrix();

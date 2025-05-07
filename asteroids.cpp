@@ -947,14 +947,14 @@ if (!initialized) {
         buttonPressed[1] = false;
         buttonPressed[2] = false;
     maze.render(gl.xres, gl.yres); 
-    } 
-
+    }
 
     if (buttonPressed[2] == true) {
         buttonPressed[0] = false;
         buttonPressed[1] = false;
     maze.renderLevel3(gl.xres, gl.yres); 
     }
+
     if (buttonPressed[1] == true) {
         buttonPressed[0] = false;
         buttonPressed[2] = false;
