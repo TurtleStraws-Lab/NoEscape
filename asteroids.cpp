@@ -91,8 +91,8 @@ class Ship {
         float color[3];
     public:
         Ship() {
-            pos[0] = (Flt)(gl.xres/2);
-            pos[1] = (Flt)(gl.yres/2);
+            pos[0] = (Flt)(gl.xres/2) - 305;
+            pos[1] = (Flt)(gl.yres/2) + 215;
             pos[2] = 0.0f;
             VecZero(dir);
             VecZero(vel);
@@ -1006,7 +1006,8 @@ int main()
         if (buttonPressed[2]) {
             DrawShip o2;
             o2.Ship(g.ship.pos[0],g.ship.pos[1],g.ship.pos[2],g.ship.angle);
-        }
+        } 
+
         obj.lighting(g.ship.pos[0],g.ship.pos[1], 100.0f);
         //glClear(GL_COLOR_BUFFER_BIT);
         r.bot = gl.yres - 15;
