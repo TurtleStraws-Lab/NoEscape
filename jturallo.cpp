@@ -242,34 +242,61 @@ void stickman_turn_around(Display *d, Window w, GC gc, int x, int y) {
 }
 
 void animate_walk_back(Display *d, Window w, GC gc, int x, int y) {
+    // Create an offscreen buffer
+    Pixmap buffer = XCreatePixmap(d, w, WIN_WIDTH, WIN_HEIGHT, DefaultDepth(d, 0));
+
     while (y > TOP_Y) {
         y -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
+
+        // Clear buffer
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        // Draw content
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        draw_walls(d, buffer, gc);
+        draw_stickman_flipped(d, buffer, gc, x, y);
+
+        // Copy to window
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
         XFlush(d);
         usleep(DELAY);
     }
 
-
     while (x > LEFT_X) {
         x -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
+
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        draw_walls(d, buffer, gc);
+        draw_stickman_flipped(d, buffer, gc, x, y);
+
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
         XFlush(d);
         usleep(DELAY);
     }
 
     while (y > 180) {  // Upward into extended left shaft
         y -= STEP;
-        XClearWindow(d, w);
-        draw_walls(d, w, gc);
-        draw_stickman_flipped(d, w, gc, x, y);
+
+        XSetForeground(d, gc, BlackPixel(d, 0));
+        XFillRectangle(d, buffer, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT);
+
+        XSetForeground(d, gc, WhitePixel(d, 0));
+        draw_walls(d, buffer, gc);
+        draw_stickman_flipped(d, buffer, gc, x, y);
+
+        XCopyArea(d, buffer, w, gc, 0, 0, WIN_WIDTH, WIN_HEIGHT, 0, 0);
         XFlush(d);
         usleep(DELAY);
     }
+
+    // Free buffer
+    XFreePixmap(d, buffer);
 }
+
 
 void animate_walk_with_walls(Display *d, Window w, GC gc, int *out_x, int *out_y) {
     int x = LEFT_X;
