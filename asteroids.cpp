@@ -933,13 +933,16 @@ void render()
     initialized = true;
     } */
     
-        if (!initialized) {
-        maze.generate(45,33);
-        maze.generateWithExit(45, 33);
-        maze.Level3(45,33);
-        initialized = true;
-        }
-
+if (!initialized) {
+    if (buttonPressed[0]) {
+        maze.generate(45, 33); // Basic maze
+    } else if (buttonPressed[1]) {
+        maze.generateWithExit(45, 33); // Maze with coin/exit logic
+    } else if (buttonPressed[2]) {
+        maze.Level3(45, 33); // Level 3 maze
+    }
+    initialized = true;
+}
     if (buttonPressed[0] == true) {
         buttonPressed[1] = false;
         buttonPressed[2] = false;
@@ -952,9 +955,6 @@ void render()
         buttonPressed[1] = false;
     maze.renderLevel3(gl.xres, gl.yres); 
     }
-
-    //void Coin::coinCollect(int xres1, int xres2, int xres3, int xres4, int yres1, 
-    //xres 840 yres 680 
     if (buttonPressed[1] == true) {
         buttonPressed[0] = false;
         buttonPressed[2] = false;
