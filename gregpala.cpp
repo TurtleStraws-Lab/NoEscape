@@ -614,17 +614,18 @@ int CreditsScreen::handleKey(int key) {
     return 0;
 }
 
-// New Levels Screen Implementation
-
+// New Levels Screen Implementation - FIXED INITIALIZATION ORDER HERE
 LevelsScreen::LevelsScreen() 
-    : selectedButton(0),
-      titlePulse(1.0f),
-      titlePulseDir(-0.01f),
+    : levelButtons(),  // Initialize vector first (though it's empty)
       backButton((screenManager.getScreenWidth() - 100) / 2, 
                  100 * (screenManager.getScreenHeight() / 480.0f), 
                  100 * (screenManager.getScreenWidth() / 640.0f), 
                  40 * (screenManager.getScreenHeight() / 480.0f), 
-                 "BACK") {
+                 "BACK"),
+      selectedButton(0),
+      titlePulse(1.0f),
+      titlePulseDir(-0.01f) {
+    
     int scrWidth = screenManager.getScreenWidth();
     int scrHeight = screenManager.getScreenHeight();
     
