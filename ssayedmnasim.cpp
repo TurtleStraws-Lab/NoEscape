@@ -207,6 +207,20 @@ void drawButton(float x1, float y1, float x2, float y2, const char* label) {
     }
 }
 
+bool isMuted = false;
+float previousVolume = 1.0f;
+
+void toggleMute() {
+    if (!isMuted) {
+        previousVolume = currentVolume;
+        currentVolume = 0.0f;
+        isMuted = true;
+    } else {
+        currentVolume = previousVolume;
+        isMuted = false;
+    }
+    alSourcef(source, AL_GAIN, currentVolume);
+}
 
 
 void display() {

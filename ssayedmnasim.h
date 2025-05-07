@@ -9,6 +9,10 @@ bool initSound();
 void startBackgroundSound();
 void shutdownSound();
 
+
+void toggleMute();       //  Add
+void playBeep();         // add
+
 extern float currentVolume;
 
 #endif
