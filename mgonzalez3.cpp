@@ -9,7 +9,6 @@
 #include <ctime>
 #include <chrono>
 
-
 using namespace std;
 
 float cellSize = 14.5; //14.5
@@ -68,11 +67,18 @@ void Maze::generate(int w, int h) {
     }
     static std::mt19937 g(45); 
     grid[0][1] = 1;
-    grid[32][43] = 1;   
+    grid[15][23] = 1;   
+    grid[15][24] = 1;   
+    grid[15][22] = 1;   
+    grid[16][23] = 1;   
+    grid[16][22] = 1;   
+    grid[15][22] = 1;   
+    grid[15][21] = 1;   
+    grid[17][22] = 1;   
     /* for (int a = 15; a <= 30; a+=1) {
        for (int k = 0; k < height; ++k) {
        grid[k][a] = 1;
-       }  */
+       } } */  
         
     carveMaze(1, 1); // Start carving from cell (1,1)
 
@@ -111,15 +117,21 @@ bool Maze::isWall(float x, float y, float cellSize, float xres, float yres) {
     float placeX = (xres - mazeWidth) / 2.0f;
     float placeY = (yres - mazeHeight) / 2.0f;
 
-    // Adjust ship position to grid space
-    int cellX = static_cast<int>((x - placeX) / cellSize);
-    int cellY = static_cast<int>((y - placeY) / cellSize);
-
-    // Out-of-bounds check
-    if (cellX < 0 || cellX >= width || cellY < 0 || cellY >= height) {
-        return true; // Treat out-of-bounds as a wall
+    float relativeX = x - placeX;
+    float relativeY = y - placeY;
+    
+    if (relativeX < 0 || relativeX > mazeWidth || 
+        relativeY < 0 || relativeY > mazeHeight) {
+        return true; 
     }
-
+    
+    int cellX = static_cast<int>(relativeX / cellSize);
+    int cellY = static_cast<int>((mazeHeight - relativeY) / cellSize);
+    
+    if (cellX < 0 || cellX >= width || cellY < 0 || cellY >= height) {
+        return true;
+    }
+    
     return grid[cellY][cellX] == 0;
 
 }
@@ -134,7 +146,6 @@ void Maze::renderLevel3(int xres, int yres) {
     float mazeHeight = height * cellSize;
     float placeX = (xres - mazeWidth) / 2.0f;
     float placeY = (yres - mazeHeight) / 2.0f;
-    //glTranslatef((-width * cellSize / 400.0) - 4.0f, (-height * cellSize / 25.0f) + 20.0f, 0.0f);
     glTranslatef(placeX, placeY, 0.0f);
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {

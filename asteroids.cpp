@@ -854,16 +854,23 @@ void physics()
        g.ship.vel[0] = 1.0f;
     }
     //-----------------------------------------------
-    /* float newX = g.ship.pos[0] + g.ship.vel[0];
+     float newX = g.ship.pos[0] + g.ship.vel[0];
     float newY = g.ship.pos[1] + g.ship.vel[1];
 
-    if (!maze.isWall(newX, newY, 14.5, gl.xres, gl.yres)) {
+if (!maze.isWall(newX, g.ship.pos[1], 14.5, gl.xres, gl.yres)) {
     g.ship.pos[0] = newX;
+} else {
+    g.ship.vel[0] = 0.0f; // Stop X movement
+}
+
+// Try moving vertically
+if (!maze.isWall(g.ship.pos[0], newY, 14.5, gl.xres, gl.yres)) {
     g.ship.pos[1] = newY;
-    } else {
-    g.ship.vel[0] = 0.0f;
-    g.ship.vel[1] = 0.0f;
-    }  */
+} else {
+    g.ship.vel[1] = 0.0f; // Stop Y movement
+}
+
+
 
 	if (gl.keys[XK_space]) {
 		//a little time between each bullet

@@ -1,5 +1,6 @@
 #ifndef MGONZALEZ3_H
 #define MGONZALEZ3_H
+#include <iostream>
 
 extern int coinsCollected;
 
